@@ -1,10 +1,16 @@
 :root{
-
-	/*--main-color: #FB6107;*/
 	--main-color: #147B4E;
 	--text-color-active: ;
 	--text-color-inactive: ;
+}
 
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('https://cdn.jsdelivr.net/gh/JetBrains/JetBrainsMono/web/woff2/JetBrainsMono-Bold.woff2') format('woff2'),
+    url('https://cdn.jsdelivr.net/gh/JetBrains/JetBrainsMono/web/woff/JetBrainsMono-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
 }
 
 .wrapper {
@@ -18,147 +24,89 @@ body {
 }
 
 h1 {
-
 	font-family: 'Saira Extra Condensed', sans-serif;
   	font-weight: 900;
-  	/*position: fixed;
-  	top: 25%;*/
   	margin-left: .7em;
   	font-size: 4em !important;
-
 }
 
 img {
-
 	border-radius: 70%;
 	width: 200px;
     height: 200px;
     border: 7px solid #1DAF70;
-    /*border: 7px solid #119DA4;
-    border-color: filter: brightness(0.6);
-*/    /*--lightness: 50%;*/
-	/*border-color: rgba(var(--main-color), 0.3);*/
-
     position: relative;
   	top: 15%;
 }
 
 p {
-
-	/*position: fixed;
-  	top: 40%;*/
   	margin-left: 2em;
-  	font-family: Helvetica;
+  	font-family: JetBrains Mono;
   	font-weight: 200;
   	font-size: 1.5em;
-
 }
 
 .hidden {
-
 	display: none !important;
-
 }
-/*
-p {
-    font-family: 'Poppins', sans-serif;
-    font-size: 1.1em;
-    font-weight: 300;
-    line-height: 1.7em;
-    color: #999;
-}
-
-a, a:hover, a:focus {
-    color: inherit;
-    text-decoration: none;
-    transition: all 0.3s;
-}*/
 
 #uwt {
-
-	color: rgb(75, 46, 131);
-
+	color: var(--main-color);
 }
 
-
 #spscc {
-
-	color: #0051ba;
+	color: var(--main-color);
 }
 
 .college-date {
-
-	color: var(--main-color);
 	text-align: right;
 	float: right;
-	
-
 }
 
 .btn-primary, .btn-primary:hover, .btn-primary:active, .btn-primary:visited {
-
 	background-color: var(--main-color) !important;
 	border-color: #1DAF70 !important;
-
-
 }
 
 .card {
-
 	margin-top: 1.5rem;
-
 }
 
 .card-title {
-
 	font-family: 'Saira Extra Condensed', sans-serif;
   	font-weight: normal;
   	font-size: 2em;
-
 }
 
 .card-text {
-
 	font-family: Helvetica;
   	font-weight: 200;
   	font-size: 1.5em;
   	margin-left: 0;
-
-
 }
 
 section.projects-section{
-
- 	padding-top: 17rem;
-
+ 	padding-top: 12rem;
 }
 
 section.skills-section{
-
-	padding-top: 17rem;
-
+	padding-top: 15rem;
 }
 
 section.projects-section .card{
-
 	display: inline-block;
 	margin-left: 2em;
-
 }
 
 section.skills-section li {
-
 	margin-left: 2em;
-  	font-family: Helvetica;
+  	font-family: JetBrains Mono;
   	font-weight: 200;
   	font-size: 1.5em;
-
 }
 
 section.education-section p{
-
 	display: inline-block;
-
 }
 
 section {
@@ -169,22 +117,14 @@ section {
   max-width: 75rem;
   padding-right: 2rem;
   padding-bottom: 2rem;
-  /*padding-left: 1rem;
-  padding-right: 1rem;
-  padding-top: 5rem;
-  padding-bottom: 5rem;
-  max-width: 150rem;*/
 }
 
 .primary-color-word{
-
 	color: var(--main-color);
-
 }
 
 
 .social-icons .social-icon {
-
     height: 3.5rem;
     width: 3.5rem;
     display: inline-flex;
@@ -196,10 +136,6 @@ section {
     border-radius: 100%;
     font-size: 1.5rem;
     margin-left: 2em;
-  	/*margin-right: 1.5rem;*/
-
-   /* position: fixed;
-  	bottom: 40%*/;
 }
 
 .social-icons .social-icon:last-child {
@@ -213,18 +149,8 @@ section {
     min-width: 300px;
     max-width: 300px;
     min-height: 100vh;
-
     background: var(--main-color);
     text-align: center;
-
-    /*position: fixed;
-    top: 0;
-    left: 0;
-
-    display: flex;
-    flex-direction: column;
-
-    margin: auto auto 0;*/
     padding: 0.5rem;
 }
 
@@ -242,7 +168,6 @@ section {
     font-size: 3em;
     display: block;
     text-decoration: none;
-    /*color: #999999;*/
     color: #86BA90;
 }
 
@@ -250,10 +175,6 @@ section {
     color: var(--main-color) !important;
     background: #fff;
 }
-
-/*#sidebar ul li.active > a, a[aria-expanded="true"] {
-    color: #fff;
-}*/
 
 #sidebar ul li.active > a {
     color: #fff;
@@ -264,37 +185,3 @@ ul ul a {
     padding-left: 30px !important;
     background: #6d7fcc;
 }
-
-/*#sidebar .sidebar-header {
-    padding: 20px;
-    background: #6d7fcc;
-}
-
-#sidebar ul.components {
-    padding: 20px 0;
-    border-bottom: 1px solid #47748b;
-}
-
-#sidebar ul p {
-    color: #fff;
-    padding: 10px;
-}
-
-#sidebar ul li a {
-    padding: 10px;
-    font-size: 1.1em;
-    display: block;
-}
-#sidebar ul li a:hover {
-    color: #7386D5;
-    background: #fff;
-}
-
-#sidebar ul li.active > a, a[aria-expanded="true"] {
-    color: #fff;
-    background: #6d7fcc;
-}
-ul ul a {
-    font-size: 0.9em !important;
-    padding-left: 30px !important;
-    backgro*/
