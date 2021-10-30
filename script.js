@@ -1,4 +1,11 @@
 $(document).ready(function () {
+    
+	$("#sideBarCollapse").click(function() {
+
+		$('#sidebar').toggleClass('collapsed');
+
+	});
+
     $("#sidebar ul li").click(function() {
 
     	$('#sidebar ul li').removeClass('active');

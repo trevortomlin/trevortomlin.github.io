@@ -4,11 +4,103 @@
 	--text-color-inactive: ;
 }
 
+#sideBarCollapse {
+	display: none !important;
+}
+
+@media screen and (max-width: 800px) {
+
+	#sidebar ul.components {
+		top: 10% !important;
+	}
+
+	img {
+		top: 5% !important;
+	}
+
+	.card {
+		margin-top: 1rem !important; 
+		margin-left: 1rem !important;
+		width: 15rem !important; 
+	}
+
+	.card-title {
+		font-family: 'Saira Extra Condensed', sans-serif;
+	  	font-weight: normal;
+	  	font-size: 1.5rem !important;
+	}
+
+	.card-text {
+		font-family: Helvetica;
+	  	font-weight: 200;
+	  	font-size: 1.5em;
+	  	margin-left: 0;
+	}
+
+	section.skills-section li {
+		margin-left: 1em !important;
+	  	font-family: JetBrains Mono;
+	  	font-weight: 200;
+	  	font-size: 1em !important;
+	}
+
+	.social-icons .social-icon {
+	    height: 2rem !important;
+	    width: 2rem !important;
+	    margin: .5rem !important;
+	    font-size: 1rem !important;
+	    margin-left: 2em !important;
+	}
+
+	section { 
+		padding-top: 5rem !important;
+		padding-left: 1rem !important;
+		max-width: 75rem;
+		padding-right: 1rem;
+		padding-bottom: 2rem;
+		max-width: 100px;
+	}
+
+	p {
+		font-size: 1em !important;
+	}
+
+	#sideBarCollapse {
+		position: relative;
+		margin-left: -.05rem;
+	  	text-align: center;
+	  	display: block !important;
+	  	height: 100px;
+	  	width: 60px;
+	}
+
+	#name, #uwt, #spscc, .primary-color-word {
+		font-size: 2rem !important;
+	}
+
+	.collapsed {
+	    min-width: 75px !important;
+	    max-width: 75px !important;
+	    min-height: 200vh;
+	    background: var(--main-color);
+	    text-align: center;
+	    padding: 0rem;
+	}
+
+	.collapsed img {
+		display: none !important;
+	}
+
+	.collapsed ul.components {
+		display: none !important;
+	}
+}
+
 @font-face {
   font-family: 'JetBrains Mono';
-  src: url('https://cdn.jsdelivr.net/gh/JetBrains/JetBrainsMono/web/woff2/JetBrainsMono-Bold.woff2') format('woff2'),
-    url('https://cdn.jsdelivr.net/gh/JetBrains/JetBrainsMono/web/woff/JetBrainsMono-Bold.woff') format('woff');
-  font-weight: 700;
+  src: url('https://cdn.jsdelivr.net/gh/JetBrains/JetBrainsMono/web/woff2/JetBrainsMono-Medium.woff2') format('woff2'),
+    url('https://cdn.jsdelivr.net/gh/JetBrains/JetBrainsMono/web/woff/JetBrainsMono-Medium.woff') format('woff');
+  font-weight: 500;
   font-style: normal;
   font-display: swap;
 }
@@ -110,13 +202,13 @@ section.education-section p{
 }
 
 section {
-  display: block;
-  align-items: center;
-  padding-top: 22rem;
-  padding-left: 3rem;
-  max-width: 75rem;
-  padding-right: 2rem;
-  padding-bottom: 2rem;
+	display: block;
+	align-items: center;
+	padding-top: 22rem;
+	padding-left: 3rem;
+	max-width: 75rem;
+	padding-right: 2rem;
+	padding-bottom: 2rem;
 }
 
 .primary-color-word{
@@ -139,10 +231,10 @@ section {
 }
 
 .social-icons .social-icon:last-child {
-  margin-right: 0;
+	margin-right: 0;
 }
 .social-icons .social-icon:hover {
-  background-color: #119DA4;
+	background-color: #119DA4;
 }
 
 #sidebar {
