@@ -10,12 +10,19 @@
 
 @media screen and (max-width: 800px) {
 
+	#sidebar{
+
+		min-height: 210vh !important;
+
+	}
+
 	#sidebar ul.components {
-		top: 10% !important;
+		top: 4% !important;
+		/*position: absolute;*/
 	}
 
 	img {
-		top: 5% !important;
+		top: 2% !important;
 	}
 
 	.card {
@@ -59,6 +66,7 @@
 		padding-right: 1rem;
 		padding-bottom: 2rem;
 		max-width: 100px;
+		/*position: absolute;*/
 	}
 
 	p {
@@ -240,7 +248,7 @@ section {
 #sidebar {
     min-width: 300px;
     max-width: 300px;
-    min-height: 100vh;
+    min-height: 125vh;
     background: var(--main-color);
     text-align: center;
     padding: 0.5rem;
