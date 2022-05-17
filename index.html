@@ -2,18 +2,19 @@
 <html>
 <head>
 	<title>Trevor's portfolio</title>
+	<link rel="icon" href="images/headshot.png" type="png">
+
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="style.css">
-	<!-- <link href='https://fonts.googleapis.com/css?family=Saira+Extra+Condensed:500,700', rel='stylesheet', type='text/css'> -->
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 	<script src="script.js"></script>
 
 	<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Saira+Extra+Condensed:wght@900&display=swap" rel="stylesheet"> 
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Saira+Extra+Condensed:wght@900&display=swap" rel="stylesheet"> 
 </head>
 <body>
 
@@ -40,6 +41,10 @@
 	                <a class="skills" href="#/SKILLS">SKILLS</a>
 	            </li>
 
+				<li>
+	                <a class="events" href="#/EVENTS">EVENTS</a>
+	            </li>
+
 	            <li>
 	                <a class="projects" href="#/PROJECTS">PROJECTS</a>
 	            </li>
@@ -58,7 +63,7 @@
 		    		<span class="primary-color-word">TOMLIN</span>
 		  		</h1>
 
-		    	<p>Hi, I'm Trevor. I am a junior at University of Washington Tacoma. I am currently looking for a Summer 2022 Software Engineering Internship or a Full-time Entry Level Software Engineering job.<br><br>Connect with me:</p>
+		    	<p>Hi, I'm Trevor. I am a junior at University of Washington Tacoma. I'm an incoming Software Engineering Summer 2022 Intern at BNY Mellon. <br><br>Connect with me:</p>
 
 		    	<div class="social-icons">
 
@@ -81,20 +86,33 @@
 
 	    	</section>
 
+			<section class="hidden events-section">
+
+				<h1 class="primary-color-word">EVENTS</h1>
+
+				<ul>
+	    			
+	    			<li>HackTheBox Cyber Apocalypse CTF - May 2022</li>
+	    			<li>Ludum Dare 50 - April 2022</li>
+
+	    		</ul>
+
+			</section>
+
 	    	<section class="hidden skills-section">
 	    		
 	    		<h1 class="primary-color-word">SKILLS</h1>
 
 	    		<ul>
 	    			
-	    			<li>C++</li>
+	    			<li>C/C++</li>
 	    			<li>Java</li>
 	    			<li>Python and libraries (Tensorflow, Scikit-Learn, Numpy, Pandas)</li>
 	    			<li>Linux</li>
 	    			<li>Git / Github</li>
 	    			<li>Arduino, Raspberry Pi, ESP32</li>
 	    			<li>Microsoft Office</li>
-	    			<li>HTML, CSS, Bootstrap, JavaScript, JQuery</li>
+	    			<li>HTML, CSS, Bootstrap, JavaScript, JQuery, Angular</li>
 	    			<li>Bash</li>
 	    			<li>Fusion360, AutoCAD</li>	
 
@@ -102,73 +120,13 @@
 
 	    	</section>
 
-	    	<section class="hidden projects-section">
+	    	<section id="projects-section" class="hidden projects-section">
 	    		
 	    		<h1 class="primary-color-word">PROJECTS</h1>
 
-	    		<div class="card" style="width: 18rem; height: 13rem;">
-					  <div class="card-body">
-					  <h5 class="card-title">This Website</h5>
-					  <p class="card-text">Resume / Portfolio Website.</p>
-					  <a href="https://github.com/trevortomlin/trevortomlin.github.io" class="btn btn-primary">View</a>
-				  </div>
-				</div>
+				<div id="projects-section-column" class="card-columns-2">
 
-				<div class="card" style="width: 18rem; height: 13rem;">
-					  <div class="card-body">
-					  <h5 class="card-title">Ball Balancer (WIP)</h5>
-					  <p class="card-text">Balances ball with Arduino.</p>
-					  <a href="https://github.com/trevortomlin/Stewart-Platform-PID-Controller" class="btn btn-primary">View</a>
-				  </div>
-				</div>
-
-	    		<div class="card" style="width: 18rem; height: 13rem;">
-					  <div class="card-body">
-					  <h5 class="card-title">Scheme Compiler (WIP)</h5>
-					  <p class="card-text">Compiler for Scheme written in C++.</p>
-					  <a href="https://github.com/trevortomlin/Scheme-Compiler" class="btn btn-primary">View</a>
-				  </div>
-				</div>
-
-				<div class="card" style="width: 18rem; height: 13rem;">
-					  <div class="card-body">
-					  <h5 class="card-title">A* Visualizer</h5>
-					  <p class="card-text">Visualizer for A* pathfinding in Python.</p>
-					  <a href="https://github.com/trevortomlin/Scheme-Compiler" class="btn btn-primary">View</a>
-				  </div>
-				</div>
-
-				<div class="card" style="width: 18rem; height: 13rem;">
-					  <div class="card-body">
-					  <h5 class="card-title">Elliptic Curves Python</h5>
-					  <p class="card-text">Implements Elliptic Curves in Python.</p>
-					  <a href="https://github.com/trevortomlin/Elliptic-Curve-Python" class="btn btn-primary">View</a>
-				  </div>
-				</div>
-
-				<div class="card" style="width: 18rem; height: 13rem;">
-					  <div class="card-body">
-					  <h5 class="card-title">AES Encryption Python</h5>
-					  <p class="card-text">AES algorithm implemented in Python.</p>
-					  <a href="https://github.com/trevortomlin/AES-Encryption-Python" class="btn btn-primary">View</a>
-				  </div>
-				</div>
-
-				<div class="card" style="width: 18rem; height: 13rem;">
-					  <div class="card-body">
-					  <h5 class="card-title">Text Banner Generator</h5>
-					  <p class="card-text">Generates Text Banners in Bash.</p>
-					  <a href="https://github.com/trevortomlin/text-banner-generator" class="btn btn-primary">View</a>
-				  </div>
-				</div>
-
-				<div class="card" style="width: 18rem; height: 13rem;">
-					  <div class="card-body">
-					  <h5 class="card-title">RSA Encryption Python</h5>
-					  <p class="card-text">Encrypts and decrypts user input using RSA.</p>
-					  <a href="https://github.com/trevortomlin/RSA-Encryption-Python" class="btn btn-primary">View</a>
-				  </div>
-				</div>
+			</div>
 
 	    	</section>
 
