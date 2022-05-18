@@ -20,6 +20,12 @@ $(document).ready(function () {
 
     $("#sidebar ul li").click(function() {
 
+		if($(window).width() < 767) {
+
+			$('#sidebar').toggleClass('collapsed');
+
+		}
+
     	$('#sidebar ul li').removeClass('active');
     	$(this).addClass('active');
 

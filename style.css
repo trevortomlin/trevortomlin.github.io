@@ -21,7 +21,8 @@
 	.card {
 		margin-top: 1rem !important; 
 		margin-left: 1rem !important;
-		width: 15rem !important; 
+		width: 65vw !important; 
+		height: 15rem !important;
 	}
 
 	.card-title {
