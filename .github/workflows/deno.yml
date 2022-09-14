@@ -35,8 +35,11 @@ jobs:
       # - name: Verify formatting
       #   run: deno fmt --check
 
-      - name: Run linter
-        run: deno lint
+      # - name: Run linter
+      #   run: deno lint
 
-      - name: Run tests
-        run: deno test -A --unstable
+      # - name: Run tests
+      #   run: deno test -A --unstable
+
+      - name: Run Deno
+        deno run main.tsx
