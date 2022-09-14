@@ -27,7 +27,7 @@ jobs:
       - uses: denoland/setup-deno@v1
         with:
           deno-version: v1.x
-      - run: deno run --allow-read=./ main.tsx
+      - run: deno run --allow-read --allow-net main.tsx
       - uses: actions/configure-pages@v1
       - uses: actions/upload-pages-artifact@v1
         with:
