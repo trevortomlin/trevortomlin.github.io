@@ -29,10 +29,8 @@ jobs:
       - uses: denoland/setup-deno@v1
         with:
           deno-version: v1.x
-      - run: deno run --allow-read --allow-net main.tsx
+      - run: deno bundle main.tsx main.js
       - uses: actions/configure-pages@v1
       - uses: actions/upload-pages-artifact@v1
-        with:
-          path: 'build'
       - uses: actions/deploy-pages@main
         id: deployment
