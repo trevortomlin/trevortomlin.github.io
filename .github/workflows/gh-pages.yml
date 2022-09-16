@@ -20,12 +20,9 @@ jobs:
         with:
           hugo-version: 'latest'
           # extended: true
-
-      - name: Change Directory
-        run: cd trevortomlinblog/
-
+          
       - name: Build
-        run: hugo --minify
+        run: cd trevortomlinblog/ | hugo --minify
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
