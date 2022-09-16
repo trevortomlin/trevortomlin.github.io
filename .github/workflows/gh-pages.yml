@@ -21,8 +21,10 @@ jobs:
           hugo-version: 'latest'
           # extended: true
 
-      - name: Build
+      -name: Change Directory
         run: cd trevortomlinblog/
+
+      - name: Build
         run: hugo --minify
 
       - name: Deploy
