@@ -21,7 +21,7 @@ jobs:
           hugo-version: 'latest'
           # extended: true
 
-      -name: Change Directory
+      - name: Change Directory
         run: cd trevortomlinblog/
 
       - name: Build
