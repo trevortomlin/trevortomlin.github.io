@@ -22,7 +22,7 @@ jobs:
           # extended: true
           
       - name: Build
-        run: cd trevortomlinblog/ | hugo --minify
+        run: ls | hugo --minify
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
