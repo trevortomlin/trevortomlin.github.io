@@ -1,4 +1,4 @@
-baseURL = 'http://www.trevortomlin.com/'
+baseURL = 'https://www.trevortomlin.com/'
 languageCode = 'en-us'
 title = "Trevor's Blog"
 theme = 'terminal'
