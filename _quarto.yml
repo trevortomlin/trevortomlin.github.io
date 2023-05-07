@@ -1,0 +1,17 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "Trevor's Website"
+  navbar:
+    right:
+      - about.qmd
+      - icon: github
+        href: https://github.com/trevortomlin
+      - icon: linkedin
+        href: https://www.linkedin.com/in/trevor-tomlin/
+format:
+  html:
+    theme: litera
+    css: styles.css

@@ -1,0 +1,23 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Trevor's Website",
+    "section": "",
+    "text": "Welcome To My Blog\n\n\n\n\n\n\n\nnews\n\n\n\n\n\n\n\n\n\n\n\nMay 7, 2023\n\n\nTrevor Tomlin\n\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "posts/welcome/index.html",
+    "href": "posts/welcome/index.html",
+    "title": "Welcome To My Blog",
+    "section": "",
+    "text": "This is the first post in a Quarto blog. Welcome!"
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "Hi, I’m Trevor. I am a motivated and passionate student with a strong interest in computer science and technology. I am currently pursuing a degree in Computer Science at the University of Washington Tacoma. I enjoy exploring new technologies and topics in all branches of computer science including machine learning and cryptography. Recently I have been researching privacy preserving machine learning techniques such as federated learning, differential privacy, and homomorphic encryption. I am excited to continue learning and growing in my field, and I am eager to contribute my skills and knowledge to innovative and impactful projects."
+  }
+]

@@ -1,0 +1,16 @@
+---
+title: "About"
+image: headshot.jpg
+about:
+  template: jolla
+  links:
+    - icon: linkedin
+      text: LinkedIn
+      href: https://linkedin.com
+    - icon: github
+      text: Github
+      href: https://github.com
+
+---
+
+Hi, I'm Trevor. I am a motivated and passionate student with a strong interest in computer science and technology. I am currently pursuing a degree in Computer Science at the University of Washington Tacoma. I enjoy exploring new technologies and topics in all branches of computer science including machine learning and cryptography. Recently I have been researching privacy preserving machine learning techniques such as federated learning, differential privacy, and homomorphic encryption. I am excited to continue learning and growing in my field, and I am eager to contribute my skills and knowledge to innovative and impactful projects.

@@ -1,0 +1,8 @@
+---
+title: "Welcome To My Blog"
+author: "Trevor Tomlin"
+date: "2023-05-07"
+categories: [news]
+---
+
+This is the first post in a Quarto blog. Welcome!
