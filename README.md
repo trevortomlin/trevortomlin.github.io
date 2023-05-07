@@ -2,13 +2,13 @@
 
 You can view the website [here](https://www.trevortomlin.com).
 
-![](/images/websitepicture.PNG)
+![](/websitepicture.png)
 
 ## Description
-This website shows useful information about myself to help aid in job searches. It also acts as a project for my resume.
+This is a website that serves as both a blog and portfolio, providing a platform to showcase my work, projects, and ideas.
 
 ## Technologies Used:
-1. Hugo
+1. Quarto
 
 ## License
 This project is licensed under the  MIT License - see the LICENSE file for details.
