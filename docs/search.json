@@ -4,7 +4,7 @@
     "href": "index.html",
     "title": "Trevor's Website",
     "section": "",
-    "text": "Welcome To My Blog\n\n\n\n\n\n\n\nnews\n\n\n\n\n\n\n\n\n\n\n\nMay 7, 2023\n\n\nTrevor Tomlin\n\n\n\n\n\n\nNo matching items"
+    "text": "Federated Learning From Scratch\n\n\n\n\n\n\n\nmachine learning\n\n\n\n\n\n\n\n\n\n\n\nMay 9, 2023\n\n\nTrevor Tomlin\n\n\n\n\n\n\n  \n\n\n\n\nWelcome To My Blog\n\n\n\n\n\n\n\nnews\n\n\n\n\n\n\n\n\n\n\n\nMay 7, 2023\n\n\nTrevor Tomlin\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "posts/welcome/index.html",
@@ -19,5 +19,47 @@
     "title": "About",
     "section": "",
     "text": "Hi, I’m Trevor. I am a motivated and passionate student with a strong interest in computer science and technology. I am currently pursuing a degree in Computer Science at the University of Washington Tacoma. I enjoy exploring new technologies and topics in all branches of computer science including machine learning and cryptography. Recently I have been researching privacy preserving machine learning techniques such as federated learning, differential privacy, and homomorphic encryption. I am excited to continue learning and growing in my field, and I am eager to contribute my skills and knowledge to innovative and impactful projects."
+  },
+  {
+    "objectID": "posts/federatedlearning/index.html",
+    "href": "posts/federatedlearning/index.html",
+    "title": "Federated Learning From Scratch",
+    "section": "",
+    "text": "Federated learning is a technique for machine learning that uses decentralized clients to train on local data and send information back to a server without revealing the local data. Federated learning helps models be trained with greater privacy and has many natural applications."
+  },
+  {
+    "objectID": "posts/federatedlearning/index.html#how-does-federated-learning-work",
+    "href": "posts/federatedlearning/index.html#how-does-federated-learning-work",
+    "title": "Federated Learning From Scratch",
+    "section": "How does Federated Learning Work?",
+    "text": "How does Federated Learning Work?\n\nAn initial model is established on the server and the weights are sent out to all clients\nEach client trains the model on its own local data and sends the weights or gradients back to the server\nAggregate the weights of each client\nUpdate the server’s model with the aggregated weights and send the new weights to each client\nRepeat steps 2-5 for some number of iterations"
+  },
+  {
+    "objectID": "posts/federatedlearning/index.html#how-do-we-aggregate-the-weights",
+    "href": "posts/federatedlearning/index.html#how-do-we-aggregate-the-weights",
+    "title": "Federated Learning From Scratch",
+    "section": "How do we aggregate the weights?",
+    "text": "How do we aggregate the weights?\nThe following two algorithms come from the paper Communication-Efficient Learning of Deep Networks from Decentralized Data by H. Brendan McMahan, Eider Moore, Daniel Ramage, Seth Hampson, and Blaise Aguera y Arcas from Google in 2016.\n\nFedSGD\nA simple way to update the server’s model is to update the parameters for every gradient that gets sent from a client. This method is called FedSGD and is defined as follows:\n\\[g_k = \\nabla F_k(w_t)\\] \\[ w_{t+1} \\leftarrow w_t - \\eta \\sum_{k=1}^{K}\\frac{n_k}{n}g_k\\]\nFor each client k, we do one single step of gradient descent and then average the weights together.\n\n\nFedAVG\nFedAVG is a modification of FedSGD that trains each client for multiple epochs and then averages the weights together. This method uses less communication than FedSGD and is one of the most commonly used algorithms. It is defined in the aformentioned paper as follows:\n\n\n\nExample with code\nWe first generate a simple dataset that can be used to classify two classes.We then train a centralized model using sklearn and plot the decision boundary. Next, we train a federated model using FedAVG and plot the decision boundary. Finally, we compare the accuracy of the two models.\n\n# Generate Dataset using sklearn\nfrom sklearn.datasets import make_classification\nfrom sklearn.model_selection import train_test_split\nimport matplotlib.pyplot as plt\n\nX, y = make_classification(\n    n_features=2, n_redundant=0, n_informative=2, n_clusters_per_class=1, random_state=7\n)\n\nX_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)\n\n# Plot the data\nplt.scatter(X[:, 0], X[:, 1], marker=\"o\", c=y, s=25, edgecolor=\"k\")\nplt.show()\n\n\n\n\nFigure 1: A synthetic dataset generated using sklearn\n\n\n\n\n\nimport numpy as np\nfrom sklearn.linear_model import SGDClassifier\n\n# Train sklearn SGDClassifier model\nmodel = SGDClassifier(loss=\"log_loss\")\nmodel.fit(X_train, y_train)\n\n# Plot the decision boundary\nx1 = np.linspace(X_test.min()-3, X_test.max()+3, 100)\nx2 = np.linspace(y_test.min()-3, y_test.max()+3, 100)\nxx1, xx2 = np.meshgrid(x1, x2)\nX_grid = np.c_[xx1.ravel(), xx2.ravel()]\nprobs = model.predict_proba(X_grid)[:, 1].reshape(xx1.shape)\n\nplt.contour(xx1, xx2, probs, [0.5], linewidths=1, colors=\"black\")\nplt.scatter(X_test[:, 0], X_test[:, 1], marker=\"o\", c=y_test, s=25, edgecolor=\"k\")\nplt.show()\n\n# Print the accuracy\naccuracy = model.score(X_test, y_test) * 100.0\nprint(f\"Accuracy: {accuracy:.2f}%\")\n\n\n\n\nFigure 2: Decision boundary after training a centralized model\n\n\n\n\nAccuracy: 85.00%\n\n\n\nimport numpy as np\nfrom sklearn.linear_model import SGDClassifier\n\nn_clients = 3\nn_epochs = 3\nn_rounds = 1\n\nclient_models = [SGDClassifier(loss=\"log_loss\") for _ in range(n_clients)]\nserver_model = SGDClassifier(loss=\"log_loss\")\n\n# Split data into clients\nX_clients = np.array_split(X_train, n_clients)\ny_clients = np.array_split(y_train, n_clients)\n\n# Initialize server coefficients to 0\nserver_model.coef_ = np.zeros((1, 2))\nserver_model.intercept_ = np.zeros(1)\nserver_model.classes_ = np.array([0, 1])\n\nfor _ in range(n_rounds):\n\n    # Set client models to be the same as the server model\n    for client_model in client_models:\n        client_model.coef_ = server_model.coef_\n        client_model.intercept_ = server_model.intercept_\n\n    # Train each client model on its own data\n    for client_model, X, y in zip(client_models, X_clients, y_clients):\n\n        # Split data into batches\n        X_batches = np.array_split(X, n_epochs)\n        y_batches = np.array_split(y, n_epochs)\n\n        for _ in range(n_epochs):\n            for X_batch, y_batch in zip(X_batches, y_batches):\n                client_model.partial_fit(X_batch, y_batch, classes=[0, 1])\n\n    # Aggregate the client models using FedAVG using the number of samples as the weights\n    n_samples = [len(X) for X in X_clients]\n    weights = [n / sum(n_samples) for n in n_samples]\n\n    server_model.coef_ = np.average(\n        [client_model.coef_ for client_model in client_models], axis=0, weights=weights\n    )\n    server_model.intercept_ = np.average(\n        [client_model.intercept_ for client_model in client_models], axis=0, weights=weights\n    )\n\n# Plot the decision boundary\nx1 = np.linspace(X_test.min()-3, X_test.max()+3, 100)\nx2 = np.linspace(y_test.min()-3, y_test.max()+3, 100)\nxx1, xx2 = np.meshgrid(x1, x2)\nX_grid = np.c_[xx1.ravel(), xx2.ravel()]\nprobs = model.predict_proba(X_grid)[:, 1].reshape(xx1.shape)\n\nplt.contour(xx1, xx2, probs, [0.5], linewidths=1, colors=\"black\")\nplt.scatter(X_test[:, 0], X_test[:, 1], marker=\"o\", c=y_test, s=25, edgecolor=\"k\")\nplt.show()\n\n# Print the accuracy\naccuracy = server_model.score(X_test, y_test) * 100.0\nprint(f\"Accuracy: {accuracy:.2f}%\")\n\n\n\n\nFigure 3: Decision boundary after training a federated model\n\n\n\n\nAccuracy: 85.00%\n\n\nNow we can see that the federated model has a similar accuracy to the centralized model. If we look at the weights of the server model, we can see that they are similar to the weights of the centralized model.\n\nprint(f\"Centralized Model Weights: w={model.coef_[0]}, b={model.intercept_[0]}\")\nprint(f\"Federated Model Weights: w={server_model.coef_[0]}, b={server_model.intercept_[0]}\")\n\nCentralized Model Weights: w=[-6.13807248 21.28558495], b=5.731260349455407\nFederated Model Weights: w=[-5.8260368  24.13905334], b=6.432089614040729"
+  },
+  {
+    "objectID": "posts/federatedlearning/index.html#a-high-level-look",
+    "href": "posts/federatedlearning/index.html#a-high-level-look",
+    "title": "Federated Learning From Scratch",
+    "section": "A High-Level Look",
+    "text": "A High-Level Look"
+  },
+  {
+    "objectID": "posts/federatedlearning/index.html#further-reading",
+    "href": "posts/federatedlearning/index.html#further-reading",
+    "title": "Federated Learning From Scratch",
+    "section": "Further Reading",
+    "text": "Further Reading\nOther algorithms for federated learning include:\n1. FedDyn\n2. Sub-FedAvg\n3. FedAvgM\n4. FedAdam\n\nFrameworks for federated learning include:\n1. TensorFlow Federated\n2. Flower"
+  },
+  {
+    "objectID": "posts/federatedlearning/index.html#issues-with-federated-learning",
+    "href": "posts/federatedlearning/index.html#issues-with-federated-learning",
+    "title": "Federated Learning From Scratch",
+    "section": "Issues with Federated Learning",
+    "text": "Issues with Federated Learning\nFederated Learning is a promising approach to training machine learning models on decentralized data. There are situations where Federated Learning is naturally the best solution given how the data is split up. However, there are still many issues that need to be considered before using it.  While Federated Learning helps increase privacy, it does not guarantee privacy. There are many attacks that use either malicious models or gradients to extract information about the data. To have privacy Federated Learning must be combined with something such as differential privacy or fully homomorphic encryption.  Another issue is that clients typically have different amounts of data and with different usage patterns that might not be representative of the entire dataset. This is defined as Unbalanced data and Non-IID data in the Federated Learning literature.  Finally, Federated Learning has to deal with the issue of limited communication and a large number of clients. Some clients have limited bandwidth and are offline for long periods of time. This means that the server model has to be able to handle clients that are not always available."
   }
 ]
