@@ -1,0 +1,16 @@
+---
+title: "Simple Keccak"
+author: "Trevor Tomlin"
+date: "2023-05-16"
+categories: [cryptography]
+---
+
+Cryptographic algorithms such as Keccak play a crucial role in securing sensitive information, but they can often seem daunting and complex to understand. The National Institute of Standards and Technology (NIST) standard for Keccak, in particular, has become a widely used cryptographic algorithm due to its high security and efficiency. However, the technical jargon and complex mathematical concepts surrounding Keccak can be intimidating for those unfamiliar with the field of cryptography. In this blog post, I aim to provide a comprehensive yet accessible guide to the NIST standard for Keccak, breaking down the technical terms and explaining them in an easier to understand way.
+
+## What is the NIST standard for Keccak?
+
+## Understanding Keccak's Hash Function
+
+## Applications of Keccak
+
+## Conclusion

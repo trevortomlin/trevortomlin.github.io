@@ -4,7 +4,7 @@
     "href": "index.html",
     "title": "Trevor's Website",
     "section": "",
-    "text": "Federated Learning From Scratch\n\n\n\n\n\n\n\nmachine learning\n\n\n\n\n\n\n\n\n\n\n\nMay 9, 2023\n\n\nTrevor Tomlin\n\n\n\n\n\n\n  \n\n\n\n\nWelcome To My Blog\n\n\n\n\n\n\n\nnews\n\n\n\n\n\n\n\n\n\n\n\nMay 7, 2023\n\n\nTrevor Tomlin\n\n\n\n\n\n\nNo matching items"
+    "text": "Simple Keccak\n\n\n\n\n\n\n\ncryptography\n\n\n\n\n\n\n\n\n\n\n\nMay 16, 2023\n\n\nTrevor Tomlin\n\n\n\n\n\n\n  \n\n\n\n\nFederated Learning From Scratch\n\n\n\n\n\n\n\nmachine learning\n\n\n\n\n\n\n\n\n\n\n\nMay 9, 2023\n\n\nTrevor Tomlin\n\n\n\n\n\n\n  \n\n\n\n\nWelcome To My Blog\n\n\n\n\n\n\n\nnews\n\n\n\n\n\n\n\n\n\n\n\nMay 7, 2023\n\n\nTrevor Tomlin\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "posts/welcome/index.html",
@@ -61,5 +61,40 @@
     "title": "Federated Learning From Scratch",
     "section": "Issues with Federated Learning",
     "text": "Issues with Federated Learning\nFederated Learning is a promising approach to training machine learning models on decentralized data. There are situations where Federated Learning is naturally the best solution given how the data is split up. However, there are still many issues that need to be considered before using it.  While Federated Learning helps increase privacy, it does not guarantee privacy. There are many attacks that use either malicious models or gradients to extract information about the data. To have privacy Federated Learning must be combined with something such as differential privacy or fully homomorphic encryption.  Another issue is that clients typically have different amounts of data and with different usage patterns that might not be representative of the entire dataset. This is defined as Unbalanced data and Non-IID data in the Federated Learning literature.  Finally, Federated Learning has to deal with the issue of limited communication and a large number of clients. Some clients have limited bandwidth and are offline for long periods of time. This means that the server model has to be able to handle clients that are not always available."
+  },
+  {
+    "objectID": "posts/keccak/index.html",
+    "href": "posts/keccak/index.html",
+    "title": "Simple Keccak",
+    "section": "",
+    "text": "Cryptographic algorithms such as Keccak play a crucial role in securing sensitive information, but they can often seem daunting and complex to understand. The National Institute of Standards and Technology (NIST) standard for Keccak, in particular, has become a widely used cryptographic algorithm due to its high security and efficiency. However, the technical jargon and complex mathematical concepts surrounding Keccak can be intimidating for those unfamiliar with the field of cryptography. In this blog post, I aim to provide a comprehensive yet accessible guide to the NIST standard for Keccak, breaking down the technical terms and explaining them in an easier to understand way."
+  },
+  {
+    "objectID": "posts/keccak/index.html#what-is-the-nist-standard-for-keccak",
+    "href": "posts/keccak/index.html#what-is-the-nist-standard-for-keccak",
+    "title": "Simple Keccak",
+    "section": "What is the NIST standard for Keccak?",
+    "text": "What is the NIST standard for Keccak?"
+  },
+  {
+    "objectID": "posts/keccak/index.html#understanding-keccaks-hash-function",
+    "href": "posts/keccak/index.html#understanding-keccaks-hash-function",
+    "title": "Simple Keccak",
+    "section": "Understanding Keccak’s Hash Function",
+    "text": "Understanding Keccak’s Hash Function"
+  },
+  {
+    "objectID": "posts/keccak/index.html#applications-of-keccak",
+    "href": "posts/keccak/index.html#applications-of-keccak",
+    "title": "Simple Keccak",
+    "section": "Applications of Keccak",
+    "text": "Applications of Keccak"
+  },
+  {
+    "objectID": "posts/keccak/index.html#conclusion",
+    "href": "posts/keccak/index.html#conclusion",
+    "title": "Simple Keccak",
+    "section": "Conclusion",
+    "text": "Conclusion"
   }
 ]
