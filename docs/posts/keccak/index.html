@@ -148,15 +148,186 @@ ul.task-list li input[type="checkbox"] {
 <p>Cryptographic algorithms such as Keccak play a crucial role in securing sensitive information, but they can often seem daunting and complex to understand. The National Institute of Standards and Technology (NIST) standard for Keccak, in particular, has become a widely used cryptographic algorithm due to its high security and efficiency. However, the technical jargon and complex mathematical concepts surrounding Keccak can be intimidating for those unfamiliar with the field of cryptography. In this blog post, I aim to provide a comprehensive yet accessible guide to the NIST standard for Keccak, breaking down the technical terms and explaining them in an easier to understand way.</p>
 <section id="what-is-the-nist-standard-for-keccak" class="level2">
 <h2 class="anchored" data-anchor-id="what-is-the-nist-standard-for-keccak">What is the NIST standard for Keccak?</h2>
+<p>The NIST standard for Keccak is a set of specifications for the Keccak cryptographic algorithm developed by Guido Bertoni, Joan Daemen, Michaël Peeters, and Gilles Van Assche. The NIST standard, officially known as <a href="https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.202.pdf">FIPS 202</a>, was published in 2015 as a replacement for the SHA-3 hash function. Keccak is a family of hash functions, with different versions that provide varying levels of security and performance. The NIST standard specifies the requirements for the use of Keccak in a variety of applications, including digital signatures, key derivation, and password hashing. One of the main advantages of Keccak over other cryptographic algorithms is its ability to resist attacks such as collision, preimage, and second preimage attacks, while also providing excellent performance and flexibility.</p>
 </section>
 <section id="understanding-keccaks-hash-function" class="level2">
 <h2 class="anchored" data-anchor-id="understanding-keccaks-hash-function">Understanding Keccak’s Hash Function</h2>
+<table class="table">
+<caption>FIPS 202 Table 3: Input block sizes for HMAC</caption>
+<thead>
+<tr class="header">
+<th>Hash Function</th>
+<th>SHA3-224</th>
+<th>SHA3-256</th>
+<th>SHA3-384</th>
+<th>SHA3-512</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Block Size (bytes)</td>
+<td>144</td>
+<td>136</td>
+<td>104</td>
+<td>72</td>
+</tr>
+</tbody>
+</table>
+<p>https://keccak.team/keccak_specs_summary.html</p>
+<table class="table">
+<caption>Keccak Team Table 3: the parameters of the standard FIPS 202 and SP 800-185 instances</caption>
+<colgroup>
+<col style="width: 13%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 29%">
+<col style="width: 31%">
+<col style="width: 7%">
+<col style="width: 5%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>r</th>
+<th>c</th>
+<th>Output length (bits)</th>
+<th>Security level (bits)</th>
+<th>Mbits</th>
+<th>d</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>SHAKE128</td>
+<td>1344</td>
+<td>256</td>
+<td>unlimited</td>
+<td>128</td>
+<td>1111</td>
+<td>0x1F</td>
+</tr>
+<tr class="even">
+<td>SHAKE256</td>
+<td>1088</td>
+<td>512</td>
+<td>unlimited</td>
+<td>256</td>
+<td>1111</td>
+<td>0x1F</td>
+</tr>
+<tr class="odd">
+<td>SHA3-224</td>
+<td>1152</td>
+<td>448</td>
+<td>224</td>
+<td>112</td>
+<td>01</td>
+<td>0x06</td>
+</tr>
+<tr class="even">
+<td>SHA3-256</td>
+<td>1088</td>
+<td>512</td>
+<td>256</td>
+<td>128</td>
+<td>01</td>
+<td>0x06</td>
+</tr>
+<tr class="odd">
+<td>SHA3-384</td>
+<td>832</td>
+<td>768</td>
+<td>384</td>
+<td>192</td>
+<td>01</td>
+<td>0x06</td>
+</tr>
+<tr class="even">
+<td>SHA3-512</td>
+<td>576</td>
+<td>1024</td>
+<td>512</td>
+<td>256</td>
+<td>01</td>
+<td>0x06</td>
+</tr>
+<tr class="odd">
+<td>cSHAKE128</td>
+<td>1344</td>
+<td>256</td>
+<td>unlimited</td>
+<td>128</td>
+<td>00</td>
+<td>0x04</td>
+</tr>
+<tr class="even">
+<td>cSHAKE256</td>
+<td>1088</td>
+<td>512</td>
+<td>unlimited</td>
+<td>256</td>
+<td>00</td>
+<td>0x04</td>
+</tr>
+</tbody>
+</table>
+<p>The 5-step mappings in the Keccak cryptographic algorithm are the core components that transform input data into a fixed-length hash output. These mappings are also known as the Keccak-p permutation, and they consist of the following steps:</p>
+<ul>
+<li>Theta: In this step, the input data is transformed by applying a linear function to each row of the state matrix. This step helps to increase the security of the algorithm by increasing the diffusion of the input data.</li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="theta.png" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">Figure 3 From FIPS 202</figcaption>
+</figure>
+</div>
+<ul>
+<li>Rho: The state matrix is rotated by a certain number of positions in this step. The amount of rotation is determined by a pre-defined pattern, which varies depending on the version of Keccak being used.</li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="rho.png" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">Figure 4 From FIPS 202</figcaption>
+</figure>
+</div>
+<ul>
+<li>Pi: In this step, the columns and rows of the state matrix are rearranged according to a pre-defined permutation. This helps to further increase the diffusion of the input data.</li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="pi.png" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">Figure 5 From FIPS 202</figcaption>
+</figure>
+</div>
+<ul>
+<li>Chi: The state matrix is transformed by applying a non-linear function to each row. This helps to introduce non-linearity into the algorithm and make it more resistant to attacks.</li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="chi.png" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">Figure 6 From FIPS 202</figcaption>
+</figure>
+</div>
+<ul>
+<li>Iota: The final step involves XORing a pre-defined round constant with a specific location in the state matrix. This helps to add additional randomness to the output and increase the security of the algorithm.</li>
+</ul>
+<p>By repeating these 5-step mappings multiple times, the input data is progressively transformed into a fixed-length hash output. The number of rounds performed depends on the version of Keccak being used and the desired level of security. The output produced by Keccak is considered to be highly secure and is resistant to various attacks such as collision, preimage, and second preimage attacks.</p>
 </section>
 <section id="applications-of-keccak" class="level2">
 <h2 class="anchored" data-anchor-id="applications-of-keccak">Applications of Keccak</h2>
+<p>Keccak has several applications in the field of cryptography due to its high security and efficiency. Some of the common applications of Keccak include:</p>
+<ul>
+<li><p>Hash Functions: Keccak is commonly used as a hash function to securely store and transmit sensitive data. Its resistance to various attacks makes it suitable for applications such as password storage, digital signatures, and message authentication.</p></li>
+<li><p>Encryption: Keccak can be used for encryption, especially in applications where data needs to be transmitted securely over a network. The algorithm’s high security makes it a reliable choice for encryption.</p></li>
+<li><p>Key Derivation: Keccak can be used to derive keys for cryptographic protocols such as TLS (Transport Layer Security) and SSL (Secure Sockets Layer). It is also used to generate keys for secure communication between different systems.</p></li>
+<li><p>Blockchain: Keccak is used as a hashing function in many blockchain systems such as Ethereum and CryptoNote. The algorithm provides high security, which is necessary for protecting the integrity of the blockchain.</p></li>
+<li><p>Random Number Generation: Keccak is used in random number generators for secure applications such as gambling, lottery, and cryptography.</p></li>
+</ul>
+<p>In summary, the versatility and high security of Keccak make it a popular choice for a wide range of applications in the field of cryptography.</p>
 </section>
 <section id="conclusion" class="level2">
 <h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>In conclusion, Keccak is a powerful cryptographic algorithm that has become a popular choice for secure applications such as password storage, digital signatures, and blockchain. Its high security and efficiency make it a reliable choice for various cryptographic operations, including hashing, encryption, key derivation, and random number generation. The 5-step mappings of Keccak, also known as the Keccak-p permutation, provide a robust framework for transforming input data into a fixed-length hash output. While Keccak may seem complex and intimidating to those unfamiliar with cryptography, this blog post has provided a comprehensive yet accessible guide to the NIST standard for Keccak. By breaking down the technical terms and explaining them in an easy-to-understand way, we hope to have demystified Keccak and made it accessible to anyone interested in cryptography.</p>
 
 
 </section>
