@@ -7,9 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Trevor Tomlin">
-<meta name="dcterms.date" content="2023-05-16">
+<meta name="dcterms.date" content="2023-05-22">
 
-<title>Trevor’s Website - Simple Keccak</title>
+<title>Trevor’s Website - Simple SHA-3</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -21,6 +21,40 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -61,6 +95,8 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 <link rel="stylesheet" href="../../styles.css">
 </head>
@@ -107,7 +143,7 @@ ul.task-list li input[type="checkbox"] {
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Simple Keccak</h1>
+      <h1 class="title">Simple SHA-3</h1>
                                 <div class="quarto-categories">
                 <div class="quarto-category">cryptography</div>
               </div>
@@ -127,7 +163,7 @@ ul.task-list li input[type="checkbox"] {
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">May 16, 2023</p>
+        <p class="date">May 22, 2023</p>
       </div>
     </div>
     
@@ -148,10 +184,48 @@ ul.task-list li input[type="checkbox"] {
 <p>Cryptographic algorithms such as Keccak play a crucial role in securing sensitive information, but they can often seem daunting and complex to understand. The National Institute of Standards and Technology (NIST) standard for Keccak, in particular, has become a widely used cryptographic algorithm due to its high security and efficiency. However, the technical jargon and complex mathematical concepts surrounding Keccak can be intimidating for those unfamiliar with the field of cryptography. In this blog post, I aim to provide a comprehensive yet accessible guide to the NIST standard for Keccak, breaking down the technical terms and explaining them in an easier to understand way.</p>
 <section id="what-is-the-nist-standard-for-keccak" class="level2">
 <h2 class="anchored" data-anchor-id="what-is-the-nist-standard-for-keccak">What is the NIST standard for Keccak?</h2>
-<p>The NIST standard for Keccak is a set of specifications for the Keccak cryptographic algorithm developed by Guido Bertoni, Joan Daemen, Michaël Peeters, and Gilles Van Assche. The NIST standard, officially known as <a href="https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.202.pdf">FIPS 202</a>, was published in 2015 as a replacement for the SHA-3 hash function. Keccak is a family of hash functions, with different versions that provide varying levels of security and performance. The NIST standard specifies the requirements for the use of Keccak in a variety of applications, including digital signatures, key derivation, and password hashing. One of the main advantages of Keccak over other cryptographic algorithms is its ability to resist attacks such as collision, preimage, and second preimage attacks, while also providing excellent performance and flexibility.</p>
+<p>The NIST standard for Keccak is a set of specifications for the Keccak cryptographic algorithm developed by Guido Bertoni, Joan Daemen, Michaël Peeters, and Gilles Van Assche. The NIST standard, officially known as <a href="https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.202.pdf">FIPS 202</a>, was published in 2015 as a part of a competition that NIST organized. Keccak is a family of hash functions, with different versions that provide varying levels of security and performance. The NIST standard specifies the requirements for the use of Keccak in a variety of applications, including digital signatures, key derivation, and password hashing.</p>
 </section>
-<section id="understanding-keccaks-hash-function" class="level2">
-<h2 class="anchored" data-anchor-id="understanding-keccaks-hash-function">Understanding Keccak’s Hash Function</h2>
+<section id="parameter-specifications" class="level2">
+<h2 class="anchored" data-anchor-id="parameter-specifications">Parameter Specifications</h2>
+<p>Keccak is described in the format <code>Keccak-p[b,n]</code> where b is the rate + capacity and n is the number of rounds. Additionally, the parameter <span class="math inline">\(w\)</span> is defined as <span class="math inline">\(\frac{b}{25}\)</span> and <span class="math inline">\(l\)</span> is <span class="math inline">\(log_2(w)\)</span>. <code>Keccak-f[b]</code> is a subset of <code>Keccak-p[b,n]</code> where <span class="math inline">\(n\)</span> is fixed to <span class="math inline">\(12 + 2l\)</span>.</p>
+<table class="table">
+<caption>FIPS 202 Table 1: KECCAK-p permutation widths and related quantities</caption>
+<thead>
+<tr class="header">
+<th>b</th>
+<th>25</th>
+<th>50</th>
+<th>100</th>
+<th>200</th>
+<th>400</th>
+<th>800</th>
+<th>1600</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>w</td>
+<td>1</td>
+<td>2</td>
+<td>4</td>
+<td>8</td>
+<td>16</td>
+<td>32</td>
+<td>64</td>
+</tr>
+<tr class="even">
+<td>l</td>
+<td>0</td>
+<td>1</td>
+<td>2</td>
+<td>3</td>
+<td>4</td>
+<td>5</td>
+<td>6</td>
+</tr>
+</tbody>
+</table>
 <table class="table">
 <caption>FIPS 202 Table 3: Input block sizes for HMAC</caption>
 <thead>
@@ -173,17 +247,14 @@ ul.task-list li input[type="checkbox"] {
 </tr>
 </tbody>
 </table>
-<p>https://keccak.team/keccak_specs_summary.html</p>
 <table class="table">
 <caption>Keccak Team Table 3: the parameters of the standard FIPS 202 and SP 800-185 instances</caption>
 <colgroup>
-<col style="width: 13%">
-<col style="width: 5%">
-<col style="width: 5%">
-<col style="width: 29%">
-<col style="width: 31%">
-<col style="width: 7%">
-<col style="width: 5%">
+<col style="width: 15%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 34%">
+<col style="width: 36%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -192,37 +263,15 @@ ul.task-list li input[type="checkbox"] {
 <th>c</th>
 <th>Output length (bits)</th>
 <th>Security level (bits)</th>
-<th>Mbits</th>
-<th>d</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td>SHAKE128</td>
-<td>1344</td>
-<td>256</td>
-<td>unlimited</td>
-<td>128</td>
-<td>1111</td>
-<td>0x1F</td>
-</tr>
-<tr class="even">
-<td>SHAKE256</td>
-<td>1088</td>
-<td>512</td>
-<td>unlimited</td>
-<td>256</td>
-<td>1111</td>
-<td>0x1F</td>
-</tr>
 <tr class="odd">
 <td>SHA3-224</td>
 <td>1152</td>
 <td>448</td>
 <td>224</td>
 <td>112</td>
-<td>01</td>
-<td>0x06</td>
 </tr>
 <tr class="even">
 <td>SHA3-256</td>
@@ -230,8 +279,6 @@ ul.task-list li input[type="checkbox"] {
 <td>512</td>
 <td>256</td>
 <td>128</td>
-<td>01</td>
-<td>0x06</td>
 </tr>
 <tr class="odd">
 <td>SHA3-384</td>
@@ -239,8 +286,6 @@ ul.task-list li input[type="checkbox"] {
 <td>768</td>
 <td>384</td>
 <td>192</td>
-<td>01</td>
-<td>0x06</td>
 </tr>
 <tr class="even">
 <td>SHA3-512</td>
@@ -248,30 +293,43 @@ ul.task-list li input[type="checkbox"] {
 <td>1024</td>
 <td>512</td>
 <td>256</td>
-<td>01</td>
-<td>0x06</td>
-</tr>
-<tr class="odd">
-<td>cSHAKE128</td>
-<td>1344</td>
-<td>256</td>
-<td>unlimited</td>
-<td>128</td>
-<td>00</td>
-<td>0x04</td>
-</tr>
-<tr class="even">
-<td>cSHAKE256</td>
-<td>1088</td>
-<td>512</td>
-<td>unlimited</td>
-<td>256</td>
-<td>00</td>
-<td>0x04</td>
 </tr>
 </tbody>
 </table>
-<p>The 5-step mappings in the Keccak cryptographic algorithm are the core components that transform input data into a fixed-length hash output. These mappings are also known as the Keccak-p permutation, and they consist of the following steps:</p>
+<p><strong>In this blog we are using <code>Keccak-f[1600]</code> which is the SHA-3 standard.</strong> This means that the rate is 576, the capacity is 1024, and the output length is 512. <span class="math inline">\(w\)</span> is 64 and <span class="math inline">\(l\)</span> is 6.</p>
+</section>
+<section id="input" class="level2">
+<h2 class="anchored" data-anchor-id="input">Input</h2>
+<p>Keccak recieves a strings of bits stored in <strong>little-endian</strong> format. Keccak pads the end of the input with the byte <code>0x06</code> followed by as many <code>0x00</code> bytes as necessary to make the input a multiple of the rate of the hash function. The last byte of the last block is set to <code>0x80</code>.</p>
+</section>
+<section id="understanding-sha-3s-hash-function" class="level2">
+<h2 class="anchored" data-anchor-id="understanding-sha-3s-hash-function">Understanding SHA-3’s Hash Function</h2>
+<p>The state of the hash function is represented as a 5x5 matrix of 64-bit words. The state is initialized to all zeros. The input is then XORed with the state. The state is then passed through the Keccak-p permutation function. This process is repeated until all of the input has been processed. The output is the state of the hash function.</p>
+<p>To convert from a bit string to the state array we use the following function:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">private</span> <span class="dt">static</span> <span class="dt">long</span><span class="op">[][]</span> <span class="fu">stringToStateArray</span><span class="op">(</span><span class="bu">String</span> s<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">long</span><span class="op">[][]</span> A <span class="op">=</span> <span class="kw">new</span> <span class="dt">long</span><span class="op">[</span><span class="dv">5</span><span class="op">][</span><span class="dv">5</span><span class="op">];</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> y <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> y <span class="op">&lt;</span> <span class="dv">5</span><span class="op">;</span> y<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> x <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> x <span class="op">&lt;</span> <span class="dv">5</span><span class="op">;</span> x<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>            <span class="bu">String</span> blockString <span class="op">=</span> s<span class="op">.</span><span class="fu">substring</span><span class="op">(</span>i <span class="op">*</span> <span class="dv">64</span><span class="op">,</span> <span class="op">(</span>i <span class="op">+</span> <span class="dv">1</span><span class="op">)</span> <span class="op">*</span> <span class="dv">64</span><span class="op">);</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>            A<span class="op">[</span>x<span class="op">][</span>y<span class="op">]</span> <span class="op">=</span> <span class="bu">Long</span><span class="op">.</span><span class="fu">reverse</span><span class="op">(</span><span class="bu">Long</span><span class="op">.</span><span class="fu">parseUnsignedLong</span><span class="op">(</span>blockString<span class="op">,</span> <span class="dv">2</span><span class="op">));</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>            i<span class="op">++;</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>            <span class="co">// 9 is the number of longs to store 576 (rate) / 64 (size of long) = 9 longs</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="op">(</span>i<span class="op">&gt;=</span><span class="dv">8</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>                <span class="cf">return</span> A<span class="op">;</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> A<span class="op">;</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>More information about this can be found in section 3.1.2 of FIPS 202.</p>
+<p>The 5-step mappings in the Keccak cryptographic algorithm are the core components that transform input data into a fixed-length hash output.</p>
+<p>Some of the step mappings require this function, which rotates the bits of a 64-bit integer to the left by a specified number of bits:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">private</span> <span class="dt">static</span> <span class="dt">long</span> <span class="fu">rotateLeft</span><span class="op">(</span><span class="dt">long</span> x<span class="op">,</span> <span class="dt">int</span> n<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="op">(</span>x <span class="op">&lt;&lt;</span> n<span class="op">)</span> <span class="op">|</span> <span class="op">(</span>x <span class="op">&gt;&gt;&gt;</span> <span class="op">(</span><span class="dv">64</span> <span class="op">-</span> n<span class="op">));</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <ul>
 <li>Theta: In this step, the input data is transformed by applying a linear function to each row of the state matrix. This step helps to increase the security of the algorithm by increasing the diffusion of the input data.</li>
 </ul>
@@ -281,6 +339,24 @@ ul.task-list li input[type="checkbox"] {
 <figcaption class="figure-caption">Figure 3 From FIPS 202</figcaption>
 </figure>
 </div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="dt">static</span> <span class="dt">long</span><span class="op">[][]</span> <span class="fu">theta</span><span class="op">(</span><span class="dt">long</span><span class="op">[][]</span> A<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">long</span><span class="op">[]</span> C <span class="op">=</span> <span class="kw">new</span> <span class="dt">long</span><span class="op">[</span><span class="dv">5</span><span class="op">];</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> x <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> x <span class="op">&lt;</span> <span class="dv">5</span><span class="op">;</span> x<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        C<span class="op">[</span>x<span class="op">]</span> <span class="op">=</span> A<span class="op">[</span>x<span class="op">][</span><span class="dv">0</span><span class="op">]</span> <span class="op">^</span> A<span class="op">[</span>x<span class="op">][</span><span class="dv">1</span><span class="op">]</span> <span class="op">^</span> A<span class="op">[</span>x<span class="op">][</span><span class="dv">2</span><span class="op">]</span> <span class="op">^</span> A<span class="op">[</span>x<span class="op">][</span><span class="dv">3</span><span class="op">]</span> <span class="op">^</span> A<span class="op">[</span>x<span class="op">][</span><span class="dv">4</span><span class="op">];</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">long</span><span class="op">[]</span> D <span class="op">=</span> <span class="kw">new</span> <span class="dt">long</span><span class="op">[</span><span class="dv">5</span><span class="op">];</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> x <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> x <span class="op">&lt;</span> <span class="dv">5</span><span class="op">;</span> x<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        D<span class="op">[</span>x<span class="op">]</span> <span class="op">=</span> <span class="op">(</span>C<span class="op">[(</span>x<span class="op">+</span><span class="dv">4</span><span class="op">)%</span><span class="dv">5</span><span class="op">])</span> <span class="op">^</span> <span class="fu">rotateLeft</span><span class="op">(</span>C<span class="op">[(</span>x<span class="op">+</span><span class="dv">1</span><span class="op">)%</span><span class="dv">5</span><span class="op">],</span> <span class="dv">1</span><span class="op">);</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> x <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> x <span class="op">&lt;</span> <span class="dv">5</span><span class="op">;</span> x<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> y <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> y <span class="op">&lt;</span> <span class="dv">5</span><span class="op">;</span> y<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>            A<span class="op">[</span>x<span class="op">][</span>y<span class="op">]</span> <span class="op">^=</span> D<span class="op">[</span>x<span class="op">];</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> A<span class="op">;</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <ul>
 <li>Rho: The state matrix is rotated by a certain number of positions in this step. The amount of rotation is determined by a pre-defined pattern, which varies depending on the version of Keccak being used.</li>
 </ul>
@@ -302,16 +378,124 @@ ul.task-list li input[type="checkbox"] {
 <ul>
 <li>Chi: The state matrix is transformed by applying a non-linear function to each row. This helps to introduce non-linearity into the algorithm and make it more resistant to attacks.</li>
 </ul>
+<p>In practice, the Pi and Rho steps are combined into a single step mapping. The combined step mapping is defined as:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="dt">static</span> <span class="dt">long</span><span class="op">[][]</span> <span class="fu">pi_rho</span><span class="op">(</span><span class="dt">long</span><span class="op">[][]</span> A<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">final</span> <span class="dt">int</span><span class="op">[][]</span> offsets <span class="op">=</span> <span class="kw">new</span> <span class="dt">int</span><span class="op">[][]</span> <span class="op">{</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        <span class="op">{</span><span class="dv">0</span><span class="op">,</span> <span class="dv">1</span><span class="op">,</span> <span class="dv">62</span><span class="op">,</span> <span class="dv">28</span><span class="op">,</span> <span class="dv">27</span><span class="op">},</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        <span class="op">{</span><span class="dv">36</span><span class="op">,</span> <span class="dv">44</span><span class="op">,</span> <span class="dv">6</span><span class="op">,</span> <span class="dv">55</span><span class="op">,</span> <span class="dv">20</span><span class="op">},</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>        <span class="op">{</span><span class="dv">3</span><span class="op">,</span> <span class="dv">10</span><span class="op">,</span> <span class="dv">43</span><span class="op">,</span> <span class="dv">25</span><span class="op">,</span> <span class="dv">39</span><span class="op">},</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>        <span class="op">{</span><span class="dv">41</span><span class="op">,</span> <span class="dv">45</span><span class="op">,</span> <span class="dv">15</span><span class="op">,</span> <span class="dv">21</span><span class="op">,</span> <span class="dv">8</span><span class="op">},</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>        <span class="op">{</span><span class="dv">18</span><span class="op">,</span> <span class="dv">2</span><span class="op">,</span> <span class="dv">61</span><span class="op">,</span> <span class="dv">56</span><span class="op">,</span> <span class="dv">14</span><span class="op">}</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="op">};</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    <span class="dt">long</span><span class="op">[][]</span> B <span class="op">=</span> <span class="kw">new</span> <span class="dt">long</span><span class="op">[</span><span class="dv">5</span><span class="op">][</span><span class="dv">5</span><span class="op">];</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> y <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> y <span class="op">&lt;</span> <span class="dv">5</span><span class="op">;</span> y<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> x <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> x <span class="op">&lt;</span> <span class="dv">5</span><span class="op">;</span> x<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>            <span class="dt">int</span> newX <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> x <span class="op">+</span> <span class="dv">3</span> <span class="op">*</span> y<span class="op">;</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>            newX <span class="op">%=</span> <span class="dv">5</span><span class="op">;</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>            <span class="dt">int</span> newY <span class="op">=</span> y<span class="op">;</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>            <span class="dt">long</span> rotatedValue <span class="op">=</span> <span class="fu">rotateLeft</span><span class="op">(</span>A<span class="op">[</span>x<span class="op">][</span>y<span class="op">],</span> offsets<span class="op">[</span>y<span class="op">][</span>x<span class="op">]);</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>            B<span class="op">[</span>newY<span class="op">][</span>newX<span class="op">]</span> <span class="op">=</span> rotatedValue<span class="op">;</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> B<span class="op">;</span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="chi.png" class="img-fluid figure-img"></p>
 <figcaption class="figure-caption">Figure 6 From FIPS 202</figcaption>
 </figure>
 </div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="dt">static</span> <span class="dt">long</span><span class="op">[][]</span> <span class="fu">chi</span><span class="op">(</span><span class="dt">long</span><span class="op">[][]</span> A<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">long</span><span class="op">[][]</span> C <span class="op">=</span> <span class="kw">new</span> <span class="dt">long</span><span class="op">[</span><span class="dv">5</span><span class="op">][</span><span class="dv">5</span><span class="op">];</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> <span class="dv">5</span><span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> j <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> j <span class="op">&lt;</span> <span class="dv">5</span><span class="op">;</span> j<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>            C<span class="op">[</span>i<span class="op">][</span>j<span class="op">]</span> <span class="op">=</span> A<span class="op">[</span>i<span class="op">][</span>j<span class="op">]</span> <span class="op">^</span> <span class="op">((~</span>A<span class="op">[(</span>i<span class="op">+</span><span class="dv">1</span><span class="op">)%</span><span class="dv">5</span><span class="op">][</span>j<span class="op">])</span> <span class="op">&amp;</span> A<span class="op">[(</span>i<span class="op">+</span><span class="dv">2</span><span class="op">)%</span><span class="dv">5</span><span class="op">][</span>j<span class="op">]);</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> C<span class="op">;</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <ul>
 <li>Iota: The final step involves XORing a pre-defined round constant with a specific location in the state matrix. This helps to add additional randomness to the output and increase the security of the algorithm.</li>
 </ul>
+<div class="sourceCode" id="cb6"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="dt">static</span> <span class="dt">long</span><span class="op">[][]</span> <span class="fu">iota</span><span class="op">(</span><span class="dt">long</span><span class="op">[][]</span> A<span class="op">,</span> <span class="dt">int</span> round<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">long</span> RC <span class="op">=</span> rc<span class="op">[</span>round<span class="op">];</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    A<span class="op">[</span><span class="dv">0</span><span class="op">][</span><span class="dv">0</span><span class="op">]</span> <span class="op">^=</span> RC<span class="op">;</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> A<span class="op">;</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>In this case the round constants are retrieved from a lookup table, however the round constants can also be calculated using Algorithm 5 from the NIST standard. Below is the lookup table for the round constants:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">private</span> <span class="dt">static</span> <span class="dt">final</span> <span class="dt">long</span><span class="op">[]</span> rc <span class="op">=</span> <span class="op">{</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="bn">0x0000000000000001L</span><span class="op">,</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="bn">0x0000000000008082L</span><span class="op">,</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="bn">0x800000000000808AL</span><span class="op">,</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="bn">0x8000000080008000L</span><span class="op">,</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="bn">0x000000000000808BL</span><span class="op">,</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="bn">0x0000000080000001L</span><span class="op">,</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    <span class="bn">0x8000000080008081L</span><span class="op">,</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="bn">0x8000000000008009L</span><span class="op">,</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    <span class="bn">0x000000000000008AL</span><span class="op">,</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    <span class="bn">0x0000000000000088L</span><span class="op">,</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    <span class="bn">0x0000000080008009L</span><span class="op">,</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    <span class="bn">0x000000008000000AL</span><span class="op">,</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    <span class="bn">0x000000008000808BL</span><span class="op">,</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    <span class="bn">0x800000000000008BL</span><span class="op">,</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>    <span class="bn">0x8000000000008089L</span><span class="op">,</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    <span class="bn">0x8000000000008003L</span><span class="op">,</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    <span class="bn">0x8000000000008002L</span><span class="op">,</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>    <span class="bn">0x8000000000000080L</span><span class="op">,</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>    <span class="bn">0x000000000000800AL</span><span class="op">,</span></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>    <span class="bn">0x800000008000000AL</span><span class="op">,</span></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>    <span class="bn">0x8000000080008081L</span><span class="op">,</span></span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>    <span class="bn">0x8000000000008080L</span><span class="op">,</span></span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>    <span class="bn">0x0000000080000001L</span><span class="op">,</span></span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>    <span class="bn">0x8000000080008008L</span></span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>By repeating these 5-step mappings multiple times, the input data is progressively transformed into a fixed-length hash output. The number of rounds performed depends on the version of Keccak being used and the desired level of security. The output produced by Keccak is considered to be highly secure and is resistant to various attacks such as collision, preimage, and second preimage attacks.</p>
+<p>A single round is defined as:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="dt">static</span> <span class="dt">long</span><span class="op">[][]</span> <span class="fu">keccakRound</span><span class="op">(</span><span class="dt">long</span><span class="op">[][]</span> A<span class="op">,</span> <span class="dt">int</span> round<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    A <span class="op">=</span> <span class="fu">theta</span><span class="op">(</span>A<span class="op">);</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    A <span class="op">=</span> <span class="fu">pi_rho</span><span class="op">(</span>A<span class="op">);</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    A <span class="op">=</span> <span class="fu">chi</span><span class="op">(</span>A<span class="op">);</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    A <span class="op">=</span> <span class="fu">iota</span><span class="op">(</span>A<span class="op">,</span> round<span class="op">);</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> A<span class="op">;</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>And gets repeated for the number of rounds:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="dt">static</span> <span class="dt">long</span><span class="op">[][]</span> <span class="fu">keccakf</span><span class="op">(</span><span class="dt">long</span><span class="op">[][]</span> A<span class="op">,</span> <span class="dt">int</span> n<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> n<span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>        A <span class="op">=</span> <span class="fu">keccakRound</span><span class="op">(</span>A<span class="op">,</span> i<span class="op">);</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> A<span class="op">;</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>To put this all together, here is psuedo code for the Keccak algorithm:</p>
+<pre><code>function keccak-f(A)
+    for i from 0 to 24
+        A = θ(A)
+        A = π(A)
+        A = ρ(A)
+        A = χ(A)
+        A = ι(A, i)
+    return A
+
+function SHA-3(M)
+    P = M || 0x06 || 0x00 || … || 0x80 so that len(P) * constant == rate
+    n = len(P)/rate
+    c = list of blocks with a length of rate bits
+
+    Initialize all state values to 0
+
+    for i from 0 to n-1
+        S = S xor c[i]
+        S = keccak_round(S)
+
+    Z = empty string
+    for i from 0 to n-1
+        Z = Z || S[i*b..(i+1)*b-1]
+    return Z</code></pre>
 </section>
 <section id="applications-of-keccak" class="level2">
 <h2 class="anchored" data-anchor-id="applications-of-keccak">Applications of Keccak</h2>
@@ -323,11 +507,17 @@ ul.task-list li input[type="checkbox"] {
 <li><p>Blockchain: Keccak is used as a hashing function in many blockchain systems such as Ethereum and CryptoNote. The algorithm provides high security, which is necessary for protecting the integrity of the blockchain.</p></li>
 <li><p>Random Number Generation: Keccak is used in random number generators for secure applications such as gambling, lottery, and cryptography.</p></li>
 </ul>
-<p>In summary, the versatility and high security of Keccak make it a popular choice for a wide range of applications in the field of cryptography.</p>
 </section>
 <section id="conclusion" class="level2">
 <h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
 <p>In conclusion, Keccak is a powerful cryptographic algorithm that has become a popular choice for secure applications such as password storage, digital signatures, and blockchain. Its high security and efficiency make it a reliable choice for various cryptographic operations, including hashing, encryption, key derivation, and random number generation. The 5-step mappings of Keccak, also known as the Keccak-p permutation, provide a robust framework for transforming input data into a fixed-length hash output. While Keccak may seem complex and intimidating to those unfamiliar with cryptography, this blog post has provided a comprehensive yet accessible guide to the NIST standard for Keccak. By breaking down the technical terms and explaining them in an easy-to-understand way, we hope to have demystified Keccak and made it accessible to anyone interested in cryptography.</p>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<ul>
+<li><a href="https://keccak.team/keccak_specs_summary.html">Keccak Team - Keccak Specifications Summary</a></li>
+<li><a href="https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.202.pdf">FIPS 202</a></li>
+</ul>
 
 
 </section>
