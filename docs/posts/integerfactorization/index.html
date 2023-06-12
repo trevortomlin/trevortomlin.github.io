@@ -6,8 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Trevor Tomlin">
+<meta name="dcterms.date" content="2023-06-12">
 
-<title>Trevor’s Website</title>
+<title>Trevor’s Website - Integer Factorization Problem</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,27 +22,59 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-listing/list.min.js"></script>
-<script src="site_libs/quarto-listing/quarto-listing.js"></script>
-<script src="site_libs/quarto-html/quarto.js"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -60,50 +94,19 @@ ul.task-list li input[type="checkbox"] {
     "search-submit-button-title": "Submit"
   }
 }</script>
-<script>
 
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-listing .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
 
-    const options = {
-      valueNames: ['listing-date','listing-title','listing-author','listing-image','listing-description','listing-categories',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
-      
-      searchColumns: ["listing-date","listing-title","listing-author","listing-image","listing-description","listing-categories"],
-    };
-
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-listing'] = new List('listing-listing', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  </script>
-
-  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
-
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="../../styles.css">
 </head>
 
-<body class="nav-fixed">
+<body class="nav-fixed fullcontent">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
     <nav class="navbar navbar-expand-lg navbar-dark ">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container">
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">Trevor’s Website</span>
     </a>
   </div>
@@ -114,7 +117,7 @@ ul.task-list li input[type="checkbox"] {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
-    <a class="nav-link" href="./about.html" rel="" target="">
+    <a class="nav-link" href="../../about.html" rel="" target="">
  <span class="menu-text">About</span></a>
   </li>  
   <li class="nav-item compact">
@@ -135,203 +138,92 @@ ul.task-list li input[type="checkbox"] {
     </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Integer Factorization Problem</h1>
+                                <div class="quarto-categories">
+                <div class="quarto-category">cryptography</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Trevor Tomlin </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">June 12, 2023</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
-    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(5)</span></div><div class="category" data-category="cryptography">cryptography <span class="quarto-category-count">(3)</span></div><div class="category" data-category="machine learning">machine learning <span class="quarto-category-count">(1)</span></div><div class="category" data-category="news">news <span class="quarto-category-count">(1)</span></div></div></div>
+    
 <!-- main -->
-<main class="content quarto-banner-title-block column-page-left" id="quarto-document-content">
+<main class="content quarto-banner-title-block" id="quarto-document-content">
 
 
 
 
+<section id="the-integer-factorization-problem-and-its-impact-on-rsa" class="level2">
+<h2 class="anchored" data-anchor-id="the-integer-factorization-problem-and-its-impact-on-rsa">The Integer Factorization Problem and Its Impact on RSA</h2>
+<p>The integer factorization problem is a fundamental challenge in cryptography, with significant implications for the widely used RSA encryption scheme. Understanding this problem and its computational complexity provides insights into the security of RSA and the potential impact of quantum computing advancements.</p>
+<p>In essence, the integer factorization problem involves breaking down a composite integer into its prime factors. While this task may seem simple for small numbers, it becomes exponentially more difficult as the size of the number increases. More specifically, the product of two prime numbers is incredibly hard to factor. This property forms the basis of RSA encryption, where the security relies on the difficulty of factoring the product of two large prime numbers.</p>
+<p>Classical computers employ various algorithms, such as the General Number Field Sieve (GNFS) or the Quadratic Sieve (QS), to factorize composite integers. The time complexity of these algorithms grows significantly with the size of the number, making it increasingly time-consuming to factorize larger integers.</p>
+<p>Let’s see an example of how we can factorize the product of two small prime numbers using a Python code snippet:</p>
+<div class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> factorize_product(p, q):</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    n <span class="op">=</span> p <span class="op">*</span> q</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    factors <span class="op">=</span> []</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    i <span class="op">=</span> <span class="dv">2</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> i <span class="op">*</span> i <span class="op">&lt;=</span> n:</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> n <span class="op">%</span> i:</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>            i <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>            n <span class="op">//=</span> i</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>            factors.append(i)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> n <span class="op">&gt;</span> <span class="dv">1</span>:</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>        factors.append(n)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> factors</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> <span class="dv">7</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>q <span class="op">=</span> <span class="dv">11</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>product <span class="op">=</span> p <span class="op">*</span> q</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>prime_factors <span class="op">=</span> factorize_product(p, q)</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"The prime factors of </span><span class="sc">{</span>product<span class="sc">}</span><span class="ss"> are: </span><span class="sc">{</span>prime_factors<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>The prime factors of 77 are: [7, 11]</code></pre>
+</div>
+</div>
+<p>In this code, we define a <code>factorize_product</code> function that takes two prime numbers <code>p</code> and <code>q</code> as input. We calculate the product of <code>p</code> and <code>q</code> and store it in <code>n</code>. The rest of the code is similar to the previous examples. We iterate through numbers starting from 2, find the factors of <code>n</code>, and add them to the list of prime factors.</p>
+<p>In the example, we factorize the product of two primes 7 and 11, which is 77. The code will output the prime factors: <code>[7, 11]</code>, indicating that 77 can be factored into the primes 7 and 11.</p>
+<p>In the code snippet above, we demonstrated the factorization of a product of two small prime numbers. However, it’s important to note that the security of RSA encryption relies on the difficulty of factoring much larger composite numbers. Typical RSA primes used in modern cryptographic systems can have lengths of 2048 bits to make a security level of 4096 bits. Factoring such large numbers using classical computers is an incredibly demanding computational task that requires immense time and resources.</p>
+<p>To put this into perspective, consider that breaking a 4096-bit RSA key by factoring the modulus is estimated to require billions of years on current classical computing technology. This emphasizes the level of security provided by RSA encryption when implemented with sufficiently large prime numbers.</p>
+<p>It’s worth noting that while this code snippet demonstrates factoring a product of small prime numbers, for larger composite numbers, more efficient factoring algorithms are required. Nonetheless, the underlying principle remains the same: factoring the product of two large prime numbers is extremely challenging, forming the basis of the security behind RSA encryption.</p>
+<p>The existence of a powerful quantum computer with the capability to execute Shor’s algorithm poses a significant threat to the security of RSA and other cryptographic systems that rely on the hardness of integer factorization. With a quantum computer, the time required to factorize large composite numbers would be reduced from exponential to polynomial, rendering RSA vulnerable to attacks.</p>
+<p>To address these concerns, researchers are actively exploring post-quantum cryptography. The goal is to develop new encryption schemes that can resist attacks from both classical and quantum computers. These schemes rely on alternative mathematical problems that have no known efficient algorithms for quantum computers, providing a potential avenue for future secure communication.</p>
 
 
+</section>
 
-<div class="quarto-listing quarto-listing-container-default" id="listing-listing">
-<div class="list quarto-listing-default">
-<div class="quarto-post image-right" data-index="0" data-categories="cryptography" data-listing-date-sort="1686553200000" data-listing-file-modified-sort="1686583101281" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="4">
-<div class="thumbnail">
-<p><a href="./posts/integerfactorization/index.html"> <div class="listing-item-img-placeholder card-img-top" >&nbsp;</div> </a></p>
-</div>
-<div class="body">
-<a href="./posts/integerfactorization/index.html">
-<h3 class="no-anchor listing-title">
-Integer Factorization Problem
-</h3>
-<div class="listing-subtitle">
-
-</div>
-</a>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('cryptography'); return false;">
-cryptography
-</div>
-</div>
-<a href="./posts/integerfactorization/index.html">
-<div class="listing-description">
-The integer factorization problem is a fundamental challenge in cryptography, with significant implications for the widely used RSA…
-</div>
-</a>
-</div>
-<div class="metadata">
-<a href="./posts/integerfactorization/index.html">
-<div class="listing-date">
-Jun 12, 2023
-</div>
-<div class="listing-author">
-Trevor Tomlin
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="1" data-categories="cryptography" data-listing-date-sort="1686380400000" data-listing-file-modified-sort="1686549347790" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="4">
-<div class="thumbnail">
-<p><a href="./posts/discretelogarithmproblem/index.html"> <p class="card-img-top"><img src="posts/discretelogarithmproblem/index_files/figure-html/cell-2-output-1.png"  class="thumbnail-image card-img"/></p> </a></p>
-</div>
-<div class="body">
-<a href="./posts/discretelogarithmproblem/index.html">
-<h3 class="no-anchor listing-title">
-Discrete Logarithm Problem
-</h3>
-<div class="listing-subtitle">
-
-</div>
-</a>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('cryptography'); return false;">
-cryptography
-</div>
-</div>
-<a href="./posts/discretelogarithmproblem/index.html">
-<div class="listing-description">
-The <strong>discrete logarithm problem</strong> is a fundamental concept in the field of cryptography. It plays a crucial role in many encryption algorithms and…
-</div>
-</a>
-</div>
-<div class="metadata">
-<a href="./posts/discretelogarithmproblem/index.html">
-<div class="listing-date">
-Jun 10, 2023
-</div>
-<div class="listing-author">
-Trevor Tomlin
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="2" data-categories="cryptography" data-listing-date-sort="1684738800000" data-listing-file-modified-sort="1684791820193" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="13">
-<div class="thumbnail">
-<p><a href="./posts/keccak/index.html"> <p class="card-img-top"><img src="posts/keccak/theta.png"  class="thumbnail-image card-img"/></p> </a></p>
-</div>
-<div class="body">
-<a href="./posts/keccak/index.html">
-<h3 class="no-anchor listing-title">
-Simple SHA-3
-</h3>
-<div class="listing-subtitle">
-
-</div>
-</a>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('cryptography'); return false;">
-cryptography
-</div>
-</div>
-<a href="./posts/keccak/index.html">
-<div class="listing-description">
-Cryptographic algorithms such as Keccak play a crucial role in securing sensitive information, but they can often seem daunting and complex to understand. The National…
-</div>
-</a>
-</div>
-<div class="metadata">
-<a href="./posts/keccak/index.html">
-<div class="listing-date">
-May 22, 2023
-</div>
-<div class="listing-author">
-Trevor Tomlin
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="3" data-categories="machine learning" data-listing-date-sort="1683615600000" data-listing-file-modified-sort="1683646207201" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="6">
-<div class="thumbnail">
-<p><a href="./posts/federatedlearning/index.html"> <p class="card-img-top"><img src="posts/federatedlearning/diagram1.png"  class="thumbnail-image card-img"/></p> </a></p>
-</div>
-<div class="body">
-<a href="./posts/federatedlearning/index.html">
-<h3 class="no-anchor listing-title">
-Federated Learning From Scratch
-</h3>
-<div class="listing-subtitle">
-
-</div>
-</a>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('machine learning'); return false;">
-machine learning
-</div>
-</div>
-<a href="./posts/federatedlearning/index.html">
-<div class="listing-description">
-Federated learning is a technique for machine learning that uses decentralized clients to train on…
-</div>
-</a>
-</div>
-<div class="metadata">
-<a href="./posts/federatedlearning/index.html">
-<div class="listing-date">
-May 9, 2023
-</div>
-<div class="listing-author">
-Trevor Tomlin
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="4" data-categories="news" data-listing-date-sort="1683442800000" data-listing-file-modified-sort="1683476945441" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1">
-<div class="thumbnail">
-<p><a href="./posts/welcome/index.html"> <div class="listing-item-img-placeholder card-img-top" >&nbsp;</div> </a></p>
-</div>
-<div class="body">
-<a href="./posts/welcome/index.html">
-<h3 class="no-anchor listing-title">
-Welcome To My Blog
-</h3>
-<div class="listing-subtitle">
-
-</div>
-</a>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('news'); return false;">
-news
-</div>
-</div>
-<a href="./posts/welcome/index.html">
-<div class="listing-description">
-This is the first post in a Quarto blog. Welcome!
-</div>
-</a>
-</div>
-<div class="metadata">
-<a href="./posts/welcome/index.html">
-<div class="listing-date">
-May 7, 2023
-</div>
-<div class="listing-author">
-Trevor Tomlin
-</div>
-</a>
-</div>
-</div>
-</div>
-<div class="listing-no-matching d-none">
-No matching items
-</div>
-</div></main> <!-- /main -->
+</main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {

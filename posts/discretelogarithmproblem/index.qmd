@@ -13,7 +13,7 @@ The **discrete logarithm problem** is a fundamental concept in the field of cryp
 
 Before delving into the discrete logarithm problem, let's quickly recap logarithms. A logarithm is an operation that calculates the exponent to which a particular base must be raised to obtain a given number. In simpler terms, it answers the question: "What power do I need to raise this base to get this number?"
 
-For example, in the equation `2^x = 8`, the logarithm base 2 of 8 is 3, denoted as `log2(8) = 3`. It tells us that 2 raised to the power of 3 equals 8.
+For example, in the equation $2^x = 8$, the logarithm base 2 of 8 is 3, denoted as $log_2(8) = 3$. It tells us that 2 raised to the power of 3 equals 8.
 
 ## The Discrete Logarithm Problem
 

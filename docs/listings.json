@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/integerfactorization/index.html",
       "/posts/discretelogarithmproblem/index.html",
       "/posts/keccak/index.html",
       "/posts/federatedlearning/index.html",
