@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/shortestvectorproblem/index.html",
       "/posts/integerfactorization/index.html",
       "/posts/discretelogarithmproblem/index.html",
       "/posts/keccak/index.html",
