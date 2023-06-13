@@ -19,7 +19,7 @@ For example, in the equation $2^x = 8$, the logarithm base 2 of 8 is 3, denoted 
 
 Now, let's move on to the discrete logarithm problem. In cryptography, we often deal with mathematical structures known as **finite fields**. These fields have a finite number of elements and exhibit certain properties that make them suitable for cryptographic operations.
 
-The discrete logarithm problem is defined within a finite field. Given a base element `g` and a target element `h`, the problem involves finding an exponent `x` such that $g^x = h.$ Mathematically, it can be represented as $x = log_g(h).$
+The discrete logarithm problem is defined within a finite field. Given a base element `g` and a target element `h`, the problem involves finding an exponent `x` such that $g^x = h \mod{n}.$ Mathematically, it can be represented as $x = log_g(h).$
 
 The challenge lies in finding the value of `x` efficiently, especially when the field is very large and calculations become computationally expensive. In other words, the problem is to determine the unknown exponent `x` based on the known values of `g` and `h`.
 
