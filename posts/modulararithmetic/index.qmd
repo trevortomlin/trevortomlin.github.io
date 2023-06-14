@@ -1,0 +1,133 @@
+---
+title: "Introduction to Modular Arithmetic"
+author: "Trevor Tomlin"
+date: "2023-06-14"
+categories: [cryptography]
+---
+# Introduction to Modular Arithmetic
+
+**Modular arithmetic** is a fascinating branch of mathematics that deals with integers and their remainders. It has various applications in fields like cryptography, computer science, and number theory. In this blog post, we'll dive into the basics of modular arithmetic and explore different operations using interactive Manim animations.
+
+## What is Modular Arithmetic?
+
+Modular arithmetic involves performing operations on numbers within a fixed range, called a modulus. The modulus acts as a wrapping point, where numbers "wrap around" when they exceed the modulus. This wrapping behavior provides interesting properties and patterns.
+
+## Addition in Modular Arithmetic
+
+Let's explore modular addition using an example. Suppose we want to add 4 and 4 modulo 5.
+
+Here are the steps for the equation $4 + 4 = 3 \mod{5 }$ using modular arithmetic:
+
+Step 1: Start with the addition of 4 and 4: $4 + 4 = 8$.
+
+Step 2: Apply the modulus operation with a modulus of 5. Divide the result (8) by the modulus (5) and find the remainder: $8 = 3 \mod{5}$.
+
+Step 3: The final result is 3, indicating that when we add 4 and 4 within the modulus of 5, the remainder is 3.
+
+## Subtraction in Modular Arithmetic
+
+Subtraction works similarly in modular arithmetic. Let's work through the equation $4 - 8 \mod{3}$ using modular arithmetic:
+
+Step 1: Start with the subtraction of 8 from 4: $4 - 8 = -4$.
+
+Step 2: Since the result is negative, we need to add the modulus to make it positive. In this case, the modulus is 3, so we add 3 to -4: $-4 + 3 = -1$.
+
+Step 3: Take the result modulo 3: $-1 = 2 \mod{3}$.
+
+Step 4: The final result is 2, indicating that when we subtract 8 from 4 within the modulus of 3, the remainder is 2.
+
+## Multiplication in Modular Arithmetic
+
+Let's work through the equation $3 * 4 \mod{7}$ using modular arithmetic:
+
+Step 1: Start with the multiplication of 3 and 4: $3 * 4 = 12$.
+
+Step 2: Take the result modulo 7: $12 = 5 \mod{7}$.
+
+Step 3: The final result is 5, indicating that when we multiply 3 by 4 within the modulus of 7, the remainder is 5.
+
+In modular arithmetic, the result of multiplication is obtained by taking the modulo of the product, ensuring that the final result falls within the defined range determined by the modulus.
+
+## Modular Inverse in Modular Arithmetic
+
+The modular inverse is another essential operation in modular arithmetic. It involves finding the number that, when multiplied by a given number modulo a specified modulus, yields a result of 1. Let's compute the modular inverse of 3 modulo 10. Here's an animation showcasing modular inverse on a number line:
+
+Let's go through the steps to find the modular inverse:
+
+Step 1: Try different values for the inverse starting from 1 and going up. Multiply each value by 3 and take the result modulo 10.
+
+- $1 * 3 = 3 \mod{10}$
+- $2 * 3 = 6 \mod{10}$
+- $3 * 3 = 9 \mod{10}$
+- $4 * 3 = 2 \mod{10}$
+- $5 * 3 = 5 \mod{10}$
+- $6 * 3 = 8 \mod{10}$
+- $7 * 3 = 1 \mod{10}$
+
+Step 2: We found that when we multiply 7 by 3 and take the result modulo 10, we get 1. Therefore, the modular inverse of 3 mod 10 is 7.
+
+After finding the modular inverse of 3 mod 10 as 7 using a naive method, let's discuss a more efficient approach to find modular inverses using the extended Euclidean algorithm.
+
+The extended Euclidean algorithm is a well-known algorithm for finding the greatest common divisor (GCD) of two numbers and obtaining their Bézout coefficients, which can be used to find the modular inverse.
+
+In the case of finding the modular inverse of 3 mod 10, we can apply the extended Euclidean algorithm as follows:
+
+Step 1: Start with the original numbers 3 and 10.
+
+Step 2: Apply the extended Euclidean algorithm to find the GCD and Bézout coefficients. The algorithm provides us with the values of x and y, such that:
+
+$GCD(3, 10) = 3 * x + 10 * y$
+
+Step 3: If the GCD is equal to 1, then the modular inverse exists. In this case, it means that there is a number, let's call it "m", such that:
+
+$3 * m = 1 \mod{10}$
+
+Step 4: The value of "m" obtained from the extended Euclidean algorithm is the modular inverse of $3 \mod{10}$.
+
+Using the extended Euclidean algorithm provides a more efficient way to find modular inverses compared to the naive method of trying different values. This algorithm has a time complexity of O(log N), where N is the larger of the two numbers involved.
+
+If you want to learn more about the extended Euclidean algorithm and how to implement it, check out this [post on Brilliant](https://brilliant.org/wiki/extended-euclidean-algorithm/).
+
+## Square Root in Modular Arithmetic
+
+Finding the square root in modular arithmetic involves finding a number that, when squared, gives a result equivalent to a given value modulo a specified modulus. Let's go through an example to illustrate the steps involved.
+
+Example: Find the square root of 5 modulo 11.
+
+Step 1: Begin with the given value, which is 5.
+
+Step 2: Try different numbers from 0 to 10 as potential square roots. Square each number and take the result modulo 11.
+
+- $0^2 = 0 \mod{11}$
+- $1^2 = 1 \mod{11}$
+- $2^2 = 4 \mod{11}$
+- $3^2 = 9 \mod{11}$
+- $4^2 = 5 \mod{11}$
+- $5^2 = 3 \mod{11}$
+- $6^2 = 3 \mod{11}$
+- $7^2 = 5 \mod{11}$
+- $8^2 = 9 \mod{11}$
+- $9^2 = 4 \mod{11}$
+- $10^2 = 1 \mod{11}$
+
+Step 3: We found that when we square 4 and 7, we obtain a result of 5 modulo 11. Therefore, the square roots of 5 modulo 11 are 4 and 7.
+
+It's important to note that in modular arithmetic, a number can have multiple square roots or no square roots at all, depending on the value and modulus involved.
+
+To find square roots in modular arithmetic, a more efficient approach is to use Euler's criterion along with the properties of quadratic residues. Euler's criterion states that for an odd prime modulus p and an integer a, if $a^{\frac{p-1}{2}} \mod{p}$ is congruent to 1, then a has a square root modulo p.
+
+Here's a more efficient method to find square roots modulo a prime modulus:
+
+- Given a value a and a prime modulus p, check if a is a quadratic residue modulo p. This can be done by calculating $a^{\frac{p-1}{2}} \mod{p}$.
+
+- If $a^{\frac{p-1}{2}} \mod{p}$ is not congruent to 1, then a has no square root modulo p.
+
+- If $a^{\frac{p-1}{2}} \mod{p}$ is congruent to 1, we can proceed to calculate the square root using the Tonelli-Shanks algorithm or other square root algorithms specifically designed for modular arithmetic. These algorithms involve solving modular equations and finding the appropriate values.
+
+The Tonelli-Shanks algorithm is a popular algorithm for finding square roots in modular arithmetic, especially for large prime moduli.
+
+It's important to note that finding square roots in modular arithmetic can be complex, especially for non-prime moduli. The methods described above are specific to prime moduli and may not directly apply to composite moduli.
+
+## Conclusion
+
+Modular arithmetic provides a unique perspective on numbers and operations within a fixed range. It exhibits interesting patterns and behaviors that have practical applications in various fields. We explored modular addition, subtraction, multiplication, square root, and modular inverses. I hope you enjoyed this introduction to modular arithmetic! In a future post I'll explore more advanced topics in modular arithmetic, so stay tuned!
