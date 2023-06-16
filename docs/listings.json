@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/lwe/index.html",
       "/posts/groupsfieldsrings/index.html",
       "/posts/modulararithmetic/index.html",
       "/posts/shortestvectorproblem/index.html",

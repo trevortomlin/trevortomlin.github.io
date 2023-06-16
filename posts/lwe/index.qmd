@@ -1,0 +1,133 @@
+---
+title: "Learning With Errors"
+author: "Trevor Tomlin"
+date: "2023-06-16"
+categories: [cryptography]
+---
+
+# Learning With Errors (LWE) Problem in Cryptography
+
+The **Learning With Errors (LWE)** problem is a mathematical problem that plays a significant role in modern cryptographic schemes. It is based on the concept of finding a solution to a system of linear equations with errors. Let's explore the LWE problem and its applications in cryptography.
+Problem Statement
+
+This problem is incredibly similar to the shortest vector problem (SVP) and the closest vector problem (CVP). I suggest you read that article first if you haven't already.
+
+## Example: Encryption using Learning With Errors
+
+The LWE problem can be formulated as the equation $A⋅s+e=b\mod{p}$, where:
+
+- $A$ is the public key matrix,
+- $s$ is the secret vector,
+- $e$ is the noise vector,
+- $b$ is the resulting ciphertext vector, and
+- $p$ is a modulus.
+
+Let's walk through a concrete example to illustrate how the Learning With Errors (LWE) problem can be used for encryption. We will use small values to demonstrate the process.
+
+Suppose we have the following parameters:
+
+- Public Key Matrix $A = \begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix}$
+- Modulus $p = 7$
+- Secret Vector $s = \begin{pmatrix} 3 \\ 1 \end{pmatrix}$
+- Noise Vector $e = \begin{pmatrix} 5 \\ 6 \end{pmatrix}$
+
+```{python}
+#| label: matrix-example
+#| fig-cap: "An example of encryption using LWE"
+#| code-fold: true
+from IPython.display import display, Math, Latex
+import numpy as np
+
+# From KMChris
+# https://gist.github.com/KMChris/8fd878826453c3d55814b3293c7b084c
+def print_matrix(array):
+    matrix = ''
+    for row in array:
+        try:
+            for number in row:
+                matrix += f'{number}&'
+        except TypeError:
+            matrix += f'{row}&'
+        matrix = matrix[:-1] + r'\\'
+    return r'\begin{bmatrix}'+matrix+r'\end{bmatrix}'
+
+q = 7
+A=np.array([[1 ,2],[3, 4]])
+sA = np.array([[5],[9]])
+eA = np.array([[2],[-1]])
+bA = np.matmul(A,sA)%q
+bA = np.add(bA,eA)%q
+
+matrix = r"b = " + print_matrix(A)
+matrix += r" * " + print_matrix(sA)
+matrix += r" + " + print_matrix(eA)
+matrix += r" \mod{" + str(q) + r"}"
+matrix += r" = " + print_matrix(bA)
+
+matrix = Math(matrix)
+
+display(matrix)
+```
+
+To encrypt the message of length $n$ represented in binary (which has t number of different values), we sample $n$ rows from $A$ and the corresponding values from $b$. We add up all the rows into a single equation and we add $\lfloor\frac{q}{t}\rfloor$ to $b$.
+
+In this case we will only use a single row, but the same process still applies.
+
+- $[1 \quad 2] = 4$
+
+If our message is the bit 1, we add $\lfloor\frac{q}{2}\rfloor$ to $b$:
+
+- $[1 \quad 2] = 4 + \lfloor\frac{q}{2}\rfloor = 7$
+
+If our message is the big 0, we add $0$ to $b$:
+
+- $[1 \quad 2] = 4$
+
+Next, the person with the secret key multiplies the ciphertext vector $b$ by the secret vector $s$ and takes the result modulo $p$ to obtain the original message. There is a small error, but this is removed by rounding the result to the nearest value representing a bit. In our case it is rounded to either 0 representing 0 or 7 representing 1.
+
+```{python}
+#| label: decryption-example
+#| fig-cap: "Decryption the message using LWE"
+#| code-fold: true
+
+print("A_rows * sA % q = correct")
+print("b_row - correct = encoded")
+
+# Encoded 1 bit
+A_row = np.array([1, 2])
+b_row = 7
+
+correct = np.matmul(A_row,sA)%q
+
+encoded = b_row - correct
+
+print(f"1 bit which should be very close to 7: {encoded}")
+
+# Encoded 0 bit
+A_row = np.array([1, 2])
+b_row = 4
+
+correct = np.matmul(A_row,sA)%q
+
+encoded = b_row - correct
+print(f"0 bit which should be very close to 0: {encoded}")
+```
+
+## Usage in Cryptography
+
+Fully Homomorphic Encryption (FHE) is a revolutionary cryptographic scheme that allows computations to be performed directly on encrypted data, without the need for decryption. FHE based on LWE enables secure computation on sensitive data while preserving privacy. It allows for powerful operations like addition and multiplication to be performed on encrypted data, providing a practical solution for secure computation in various applications, such as privacy-preserving data analysis and secure outsourcing of computations.
+
+Kyber is a post-quantum secure key encapsulation mechanism (KEM) based on LWE. It is designed to provide secure key exchange in the presence of powerful quantum computers. Kyber uses the LWE problem to generate cryptographic keys, ensuring that the exchanged keys remain secure even if an adversary has access to quantum computing resources. Kyber is a promising candidate for secure communication in a post-quantum world, offering strong security guarantees and efficient performance.
+
+Both TFHE (The Fully Homomorphic Encryption Library) and Kyber highlight the practical applications of the LWE problem in constructing advanced cryptographic algorithms. By leveraging the mathematical hardness of the LWE problem, these algorithms provide secure and efficient solutions for various cryptographic tasks, contributing to the development of post-quantum secure systems.
+
+## Other Problems
+The Learning With Errors (LWE) problem is closely related to other lattice-based problems, including Ring Learning With Errors (RLWE) and General Learning With Errors (GLWE). These problems share similar mathematical structures and serve as the foundation for various cryptographic schemes.
+
+RLWE extends the LWE problem by introducing an additional algebraic structure called a ring. It involves working with polynomials instead of vectors, which offers certain advantages in cryptographic constructions. RLWE allows for the development of efficient encryption schemes, such as the NTRUEncrypt scheme, which provides post-quantum security.
+
+GLWE generalizes the LWE problem by considering a more general form of noise distribution. It allows for more flexibility in the noise generation process and offers enhanced security guarantees. GLWE is utilized in cryptographic constructions such as functional encryption and obfuscation, enabling advanced functionalities like fine-grained access control and program obfuscation.
+
+## Conclusion
+
+In conclusion, the Learning With Errors (LWE) problem is a powerful mathematical framework that has gained significant attention in the field of post-quantum cryptography. Its security is based on the presumed hardness of finding the secret key from the public key, even when given noisy and seemingly random equations. The LWE problem offers a promising approach to building cryptographic schemes that are resilient against attacks from both classical and quantum computers. As researchers continue to explore and develop new algorithms and techniques in this area, the LWE problem holds great potential for providing secure communication and protecting sensitive information in the era of quantum computing.
