@@ -8,7 +8,6 @@ categories: [cryptography]
 # Learning With Errors (LWE) Problem in Cryptography
 
 The **Learning With Errors (LWE)** problem is a mathematical problem that plays a significant role in modern cryptographic schemes. It is based on the concept of finding a solution to a system of linear equations with errors. Let's explore the LWE problem and its applications in cryptography.
-Problem Statement
 
 This problem is incredibly similar to the shortest vector problem (SVP) and the closest vector problem (CVP). I suggest you read that article first if you haven't already.
 
