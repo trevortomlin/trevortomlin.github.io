@@ -2,8 +2,10 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/ot/index.html",
       "/posts/sss/index.html",
       "/posts/zkp/index.html",
+      "/posts/kdd2023/index.html",
       "/posts/lwe/index.html",
       "/posts/groupsfieldsrings/index.html",
       "/posts/modulararithmetic/index.html",

@@ -1,0 +1,10 @@
+---
+title: "Paper accepted into KDD 2023 Undergraduate Consortium"
+author: "Trevor Tomlin"
+date: "2023-06-20"
+categories: [news]
+---
+
+![KDD 2023 Banner](banner.jpg)
+
+I'm thrilled to share that our paper has been accepted for presentation at the prestigious KDD conference. It's an honor to have our research recognized by the conference committee, and I want to express my heartfelt gratitude to all my co-authors and professor who contributed their expertise and dedication to this project. Our paper, titled *Predicting Time to Pushback of Flights in U.S. Airports*, delves into predicting when an airplane leaves the gate by utilizing features such as aircraft type, weather features, and airport activity. We hope that our work will help airlines and airports better understand the factors that contribute to delays and improve their operations. It will be available for viewing on the [KDD website](https://www.kdd.org/kdd2023/) soon.

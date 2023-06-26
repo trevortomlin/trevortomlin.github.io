@@ -1,0 +1,110 @@
+---
+title: "Oblivious Transfer"
+author: "Trevor Tomlin"
+date: "2023-06-26"
+categories: [cryptography]
+---
+
+![Diagram explaining oblivious transfer](diagram1.png)
+
+# Oblivious Transfer
+**Oblivious Transfer** (OT) is a cryptographic protocol that allows one party, often referred to as the sender, to send a set of private messages to another party, known as the receiver, without the sender learning which message was received by the receiver and without the receiver learning any messages other than the one they chose.
+
+## Rabin's Oblivious Transfer
+In 1981, Michael Rabin published a paper titled "How to Exchange Secrets with Oblivious Transfer" in which he described a protocol for 1-out-of-2 oblivious transfer. It is based on the RSA cryptosystem and relies on the difficulty of factoring large integers. There is a 50% chance that the receiver will receive the first message and a 50% chance that the receiver will receive the second message. The sender does not know which message the receiver received and the receiver does not know the contents of the message they did not receive.
+
+## 1-out-of-2 oblivious transfer
+1-out-of-2 oblivious transfer is a more useful form of oblivious transfer than Rabin's original protocol. It allows the sender to send two messages to the receiver and the receiver to choose which message they receive. The sender does not know which message the receiver received and the receiver does not know the contents of the message they did not receive. It can be generalized to n-out-of-m oblivious transfer, where the sender sends m messages to the receiver and the receiver chooses one of the messages to receive. This is the basis for many protocols underlying secure multiparty computation.
+
+Below explains the steps for 1-out-of-2 oblivious transfer:
+
+1. Bob and Alice agree on a generator $g$ and prime number $p$
+2. Alice generates a random number $a$ and sends $g^a$ to Bob
+3. Bob generates a random number $b$ and sends $B=g^b$ if he wants the 0th message and $B=Ag^b$ if he wants the 1st message
+4. Alice computer $k_0 = Hash(B^a)$ and $k_1 = Hash((B/A)^a)$ and sends $E_{k_0}(m_0)$ and $E_{k_1}(m_1)$ to Bob
+5. Bob calculates k_r = Hash((A)^b) and decrypts both messages to get $m_r$
+
+Here is the protocol implemented in Python where Bob wants the 0th message:
+
+```{python}
+import random
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import pad, unpad
+import struct
+import hashlib
+
+# Hashes data using SHA3-256
+def sha3_256_hash(data):
+    sha3_hash = hashlib.sha3_256()
+
+    if not isinstance(data, bytes):
+        data = str(data).encode()
+
+    sha3_hash.update(data)
+
+    hash_result = sha3_hash.digest()
+
+    return hash_result
+
+# Establish shared parameters
+g = 3
+p = 17
+
+# Alice generates a random number a and sends g^a to Bob
+# ! This is not secure, but it is just for demonstration purposes !
+a = random.randint(0, p)
+A = (g ** a) % p
+
+# Bob generates a random number b and sends B=g^b to Alice
+# Bob wants the 0th message
+# Bob could also send B=Ag^b if he wanted the 1st message
+# ! This is not secure, but it is just for demonstration purposes !
+b = random.randint(0, p)
+B = (g ** b) % p
+kr = sha3_256_hash((A ** b) % p)
+
+# Alice computes k0 = Hash(B^a) and k1 = Hash((B/A)^a) and sends E_{k0}(m0) and E_{k1}(m1) to Bob
+k0 = sha3_256_hash((B ** a) % p)
+k1 = sha3_256_hash(((B / A) ** a) % p)
+
+m0 = pad(b"Hello", 16)
+m1 = pad(b"World", 16)
+
+# ! This is not secure, but it is just for demonstration purposes !
+cipher0 = AES.new(k0, AES.MODE_ECB)
+c0 = cipher0.encrypt(m0)
+
+cipher1 = AES.new(k1, AES.MODE_ECB)
+c1 = cipher1.encrypt(m1)
+
+# Bob calculates kr = Hash((A)^b) and decrypts both messages to get mr
+# ! This is not secure, but it is just for demonstration purposes !
+cipherb = AES.new(kr, AES.MODE_ECB)
+
+print(unpad(cipherb.decrypt(c0), 16))
+
+try:
+    print("C0: " + unpad(cipherb.decrypt(c1), 16))
+except ValueError:
+    print("Bob did not receive the 1st message")
+```
+
+## 1-out-of-n oblivious transfer
+The protocol shown above can also be generalized to support more than 2 messages by the sender having $n$ messages and the reciever having index $i$ which represents the message they want from the sender. 
+
+There are also ways to make it $k$ of $n$ where a reciever can request $k$ messages from the sender. 
+
+## Applications
+- Secure Multiparty Computation (MPC):
+
+    - Oblivious Transfer is a fundamental component of secure MPC protocols.
+    It allows multiple parties to jointly compute functions on private inputs without revealing individual inputs.
+    Enables privacy-preserving computations in scenarios such as private auctions and collaborative machine learning.
+
+- Private Information Retrieval (PIR):
+
+    - PIR enables retrieving specific information from a database without revealing the queried item or learning about other items.
+    Oblivious Transfer is used to construct PIR protocols, preserving user privacy while retrieving desired data.
+
+## Conclusion
+Oblivious Transfer is a powerful cryptographic protocol that enables secure communication between parties while preserving privacy. It provides a way for senders to transfer private messages to receivers without either party gaining information about the unselected messages. The applications of oblivious transfer extend to various domains where privacy and secure computations are essential. By leveraging the principles of cryptography and secure protocols, oblivious transfer offers a valuable tool for building secure systems and protecting sensitive information.
