@@ -1,0 +1,57 @@
+---
+title: "Verifiable Delay Functions"
+author: "Trevor Tomlin"
+date: "2023-07-11"
+categories: [cryptography]
+---
+
+# Verifiable Delay Functions
+A **Verifiable Delay Function** (VDF) is a computational primitive that introduces a time delay in evaluating a function while providing proof of its correctness. In simple terms, it is a function that takes an input and produces an output after a specific time period, making it computationally expensive to compute the output faster. The key property of VDFs is that they are easy to verify once the output is obtained, but computationally challenging to compute within a shorter time frame. In this blog post, we will delve into the world of VDFs, exploring their applications, properties, and potential impact on the field of cryptography.
+
+## Definition of VDF
+1. **Verifiable**: The output of the function can be verified to be correct.
+2. **Delay**: The output of the function cannot be computed faster than a specific time period and runs sequentially.
+3. **Function**: The function is deterministic and has a unique output for each input.
+
+## Naive VDF
+We can hash a value $t$ times to create a naive VDF.
+
+$H^t(x) = H(H(...H(x)))$
+
+We then use a SNARK to prove that the output is correct. Alternatively, we could recompute the hashes, however, that would be infeasable.
+
+This method *works* because it is sequential and verifiable, but there are far more efficient methods available.
+
+## Pietrzak's VDF
+Pietrzak's VDF found a solution using groups of unknown order. Here's how it works:
+
+::: {.column-margin}
+**What is a group of unknown order?**
+A group of unknown order is a group where the parties do not know how many elements are in the group. For instance, in RSA groups, we generate two prime numbers $p$ and $q$ and multiply them together to get the composite modulus $n$. If we know the order of the group, we can solve the problem much easier. To create the order $n$ we have to use a trusted setup by relying on something like multi-party computation.
+:::
+
+1. We establish a VDF with t steps, a hash function H that maps bytes $\rightarrow$ elements of $G$, and a finite abelian group of unknown order $G$.
+2. We compute the VDF as $y = {H(x)^{2}}^{t}$
+
+The squaring of the hash function is what makes this VDF sequential and the fact that $G$ is a group of unknown order makes it difficult to compute the output faster than $t$ steps.
+
+For the proof, the verifier wants to prove $y = {H(x)^2}^{t}$ so they first sends $\mu = {H(x)^2}^{\frac{t}{2}}$. Then the verifier will send a random value r which is constrained to be less than the security parameter $\lambda$ (which was chosen during initialization). Then both parties compute $x_1 = x^r * \mu$ and $y = \mu^r * y$. If the original statement was correct, then $y_1 = {x_1^2}^{\frac{t}{2}}$. This is repeated $\log_2(t)$ times until $t=1$ to get the final proof.
+
+This can be made into a non-interactive proof by using the Fiat-Shamir transformation.
+
+## Wesolowski's VDF
+Wesolowski's VDF is similar to Pietrzaks except for the verification step. Instead of halving recursively, the prover gives a point near the end of the sequence and the verifier computers the rest of the sequence to verify the output. The prover only has to store a single point and the the prime number which is a lot less space than Pietrzak's VDF.
+
+## Finite Groups of Unknown Order
+
+### RSA
+As mentioned above, the most popular option for VDFs is using RSA groups. These groups have been studied extensively and it is known how to create them securely. The downside is that they require a trusted setup to generate the order of the group which could compromise security if the setup is not done correctly.
+
+### Class Groups
+Class Groups are a newer area of research that aim to eliminate the trusted setup requirement of RSA groups. One downside of class groups is that their operations are more computationally expensive than RSA groups. However, the fact that they can switch groups often because they do not require a trusted setup makes them a good candidate for VDFs. More research needs to be done on these groups, but they appear to be a promising option.
+
+## Applications
+One big application of VDFs are randomness beacons. Imagine that there is an lottery on a blockchain and the lottery takes some amount of randomness from the a certain blocks hash to generate the numbers. One visible flaw to this method is that miners could withhold blocks until they find a block that gives them the numbers they want. This is called a *block withholding attack*. To prevent this, we can use a VDF to generate the randomness. The VDF would take the hash of the block as input and output a random number after a certain amount of time passed. The VDF would be sequential so miners would not be able to withhold blocks to find the right hash. The VDF would also be verifiable so that the miners could not lie about the output. This would prevent block withholding attacks and make the lottery more secure.
+
+## Conclusion
+In conclusion, Verifiable Delay Functions (VDFs) provide a powerful cryptographic tool for achieving time-delayed computations with verifiability. By utilizing sequential and non-parallelizable operations, VDFs introduce a time delay that enhances security and prevents manipulation. The applications of VDFs are vast, with randomness beacons being a notable use case. VDF-based randomness beacons ensure the generation of unbiased and publicly verifiable random numbers, thereby enhancing the fairness and integrity of applications such as lotteries and cryptographic protocols. Ongoing research and development in VDFs aim to improve efficiency, explore new constructions, and expand their applications, making VDFs a promising area in the field of cryptography with significant potential for enhancing security and trust in various domains.

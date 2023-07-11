@@ -1,0 +1,15 @@
+---
+title: "Differential Privacy"
+author: "Trevor Tomlin"
+date: "2023-07-05"
+categories: [privacy]
+draft: true
+---
+
+# What is Differential Privacy?
+Differential privacy is a framework for achieving privacy in data analysis by introducing noise or randomization into the output of computations. Its primary objective is to prevent the leakage of personal information about individuals present in a dataset while still providing meaningful and accurate statistical results.
+
+## Why is Differential Privacy Important?
+In 2007, Netflix announced a $1 million prize to anyone who could improve their movie recommendation algorithm by 10%. The dataset they released contained the movie ratings of 500,000 users. In 2009, two researchers were able to de-anonymize the dataset by cross-referencing it with the Internet Movie Database (IMDb). They were able to identify the movie ratings of several individuals. This was a major privacy breach and led to the dataset being taken down. Differential Privacy can be used to share datasets like this without compromising the privacy of the individuals in the dataset.
+
+## How Does Differential Privacy Work?

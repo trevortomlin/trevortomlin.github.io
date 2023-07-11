@@ -1,0 +1,34 @@
+- [x] federated learning
+- [x] sha-3
+- [x] discrete logarithm problem
+- [x] integer factorization problem
+- [x] svp & cvp
+- [x] basic modular arithmetic
+- [x] groups, rings, fields
+- [x] learning with errors
+- [x] zero knowledge proofs
+- [x] shamir secret sharing
+- [x] oblivious transfer
+- [x] yao's garbled circuits
+- [x] verifiable delay functions
+- [ ] fast fourier transform
+- [ ] ring signatures
+- [ ] differential privacy
+- [ ] fully homomorphic encryption
+- [ ] zk-snarks
+- [ ] zk-starks
+- [ ] multi-party computation
+- [ ] advanced modular arithmetic
+- [ ] pairing based cryptography
+- [ ] siamese networks
+- [ ] zk-ml
+- [ ] smart contracts
+- [ ] private set intersection
+- [ ] private information retrieval
+- [ ] crystals kyber
+- [ ] ring learning with errors
+- [ ] importance of privacy
+- [ ] secure remote password protocol
+- [ ] internals of linux
+- [ ] graph neural networks
+- [ ] reinforcement learning
