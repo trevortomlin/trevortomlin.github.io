@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/fft/index.html",
       "/posts/vdf/index.html",
       "/posts/ygc/index.html",
       "/posts/ot/index.html",

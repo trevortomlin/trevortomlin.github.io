@@ -1,0 +1,89 @@
+---
+title: "Fast Fourier Transform"
+author: "Trevor Tomlin"
+date: "2023-07-18"
+categories: [mathematics, algorithms]
+---
+
+# Fast Fourier Transform
+The **Fast Fourier Transform** is a divide and conquer algorithm for computing the discrete Fourier transform of a sequence, or its inverse. Fourier analysis converts a signal from its original domain (often time or space) to a representation in the frequency domain and vice versa. The DFT is obtained by decomposing a sequence of values into components of different frequencies. This operation is useful in many fields but computing it directly from the definition is too slow to be practical. The FFT algorithm computes the same result more quickly. The **FFT** has many use cases in computer science and cryptography that make it a very important algorithm to understand.
+
+## Why do we need it?
+Say we want to multiply two polynomials $p(x) = x^2 + 4x + 1$ and $f(x) = 3x^2 + x + 4$. We can do this by multiplying each term in $p(x)$ by each term in $f(x)$ and adding the results. 
+
+![](videos/MultiplyPolynomials.mp4)
+
+This gives us $f(x) = 3x^4 + 13x^3 + 11x^2 + 17x + 4$. This is a simple example, but it illustrates the point that multiplying two polynomials of degree $n$ takes $O(n^2)$ time.
+
+Another way to do this multiplication is to do it pointwise. We can use a fact that a polynomial of degree $n$ is uniquely determined by its values at $n+1$ points. So we can evaluate $p(x)$ and $f(x)$ at some number points, multiply the values at each point, and then interpolate the resulting polynomial. This is called the **point-value representation** of a polynomial. Since both polynomials are of degree 2, the resulting polynomial will be of degree 4. In this case we will need 5 points from each polynomial to uniquely determine the resulting polynomial.
+
+![](videos/MultiplyPolynomialsPointwise.mp4)
+
+Imagine we want to reconstruct the simple polynomial $f(x) = x^2$ from a set of points using Lagrange Interpolation. We know that a polynomial of degree 2 requires 3 points to uniquely define it so we will pick the points (0,0), (1, 1), and (-1, 1).
+
+![](videos/LagrangeInterpolation.mp4)
+
+So another way to multiply polynomials is to first evaluate both polynomials at $n+1$ points, multiply the values at each point, and then interpolate the resulting polynomial. The run time of doing this is also $O(n^2)$ so it is not any faster than the first method. To get a faster algorithm we need to use the **Fast Fourier Transform**.
+
+One fact of polynomials that will be helpful for understanding the **Fast Fourier Transform** is that any polynomial can be split into two polynomials where one contains the even powers and the other contains the odd powers. For example, $f(x) = x^4 + 2x^3 + 3x^2 + 4x + 5$ can be split into $f_1(x) = x^4 + 3x^2 + 5$ and $f_2(x) = 2x^3 + 4x$. If you remember from high school algebra that polynomials of even degree are symmetric about the y-axis and polynomials of odd degree are anti-symmetric about the y-axis, you might be able to see where we are headed.
+
+![](videos/EvenAndOddPoints.mp4)
+
+A mathematical definition is as follows: $P(x) = evens(x^2) + x * odds(x^2)$ and $P(-x) = evens(x^2) - x * odds(x^2)$. Because of these fact, we dont have to evaluate $n+1$ points, instead we can just evaluate $\lceil \frac{n}{2} \rceil + 1$ points.
+
+We need to introduce complex numbers because when we split, we are squaring the numbers which results in them being all positive. We can use what are called the Nth Roots of Unity to get around this. The Nth Roots of Unity are the numbers that are solutions to the equation $x^n = 1$. For example, the 4th roots of unity are 1, -1, i, and -i. We define a term $\omega = e^\frac{2 \pi i}{n}$ which defines the roots of unity. In our previous example, the 4th Roots of Unity using $\omega$ are 1, $\omega^2$, $\omega^3$, and $\omega^4$. We can use these roots of unity to evaluate the polynomial at the points we need. An important equation we can use is $\omega^{i+n/2} = -\omega^i$. When we square the the Nth roots of unity, we get the N/2 roots of unity. We can use these points for our evaluation to make sure that we have positive and negative paired points when we square the points.
+
+![](videos/RootsOfUnity.mp4)
+
+```{python}
+import math
+import numpy as np
+
+
+def fft(coeffs: list):
+    n = len(coeffs)
+
+    if n == 1:
+        return coeffs
+
+    # n needs to be a power of 2, so we zero pad it if it isn't
+    if n & (n - 1) != 0:
+        n = 2 ** math.ceil(math.log2(n))
+        coeffs += [0 for _ in range(n - len(coeffs))]
+
+    even = fft(coeffs[::2])
+    odd = fft(coeffs[1::2])
+    out = [0 for _ in range(n)]
+
+    omega = math.e ** (2 * math.pi * complex(0, 1) / n)
+
+    for i in range(n // 2):
+        out[i] = even[i] + omega ** i * odd[i]
+        out[i + n // 2] = even[i] - omega ** i * odd[i]
+
+    return out
+        
+
+vals = fft([4, 17, 11, 13, 3])
+print([np.round(x) for x in vals])
+```
+
+We can see that we got a list of points evaluated at the roots of unity of the function. At this point, we could multiply the points like we saw above to get another set of points describing the multiplied polynomial. To perform the **Inverse Fast Fourier Transform** we need to keep the first point and reverse the rest of the list. After that, we divide by the number of the points we evaluated at.
+
+```{python}
+def ifft(coeffs: list):
+    vals = fft(coeffs)
+    return [val / len(vals) for val in [vals[0]] + vals[1:][::-1]]
+
+vals = ifft(vals)
+print([np.round(x) for x in vals])
+```
+
+We see that we got the same polynomial back, plus some extra terms because of the zero padding. The **FFT** runs in $O(n \log{n})$ time which makes it much faster than the $O(n^2)$ time of the naive method.
+
+## Conclusion
+The **Fast Fourier Transform (FFT)** is a powerful algorithm that revolutionized signal processing and data analysis. We have seen how it can be used to convert between the coefficient representation and the value representation of a polynomial quickly. The **FFT** gets used often in cryptography when dealing with polynomials and many other use cases where its speed is needed.
+
+## References
+* [Reducible's YouTube video](https://www.youtube.com/watch?v=h7apO7q16V0)
+* [Vitalik Buterin's blog](https://vitalik.ca/general/2019/05/12/fft.html)
