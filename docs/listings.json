@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/merkletree/index.html",
       "/posts/fft/index.html",
       "/posts/vdf/index.html",
       "/posts/ygc/index.html",
