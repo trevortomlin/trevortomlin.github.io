@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/cyclotomicpolynomials/index.html",
       "/posts/merkletree/index.html",
       "/posts/fft/index.html",
       "/posts/vdf/index.html",

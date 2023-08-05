@@ -1,0 +1,28 @@
+---
+title: "Cyclotomic Polynomials"
+author: "Trevor Tomlin"
+date: "2023-08-4"
+categories: [mathematics]
+---
+
+# What are cyclotomic polynomials?
+A **cyclotomic polynomial** is an irreducible polynomial whose roots are defined from the primitive roots of unity. The $n$th cyclotomic polynomial is denoted as $\Phi_n(x)$.
+
+## Nth Roots of Unity
+The $n$th roots of unity are the solutions to the equation $x^n = 1$. The $n$th roots of unity are defined as $\omega_n^k$ where $\omega_n = e^{\frac{2\pi i}{n}}$ and $k \in \{0, 1, 2, \dots, n-1\}$.
+
+For example, the 4th roots of unity are $\{1, i, -1, -i\}$.
+
+## Primitive Roots of Unity
+A primitive root of unity is a root of unity whose order is $n$. The order of a root of unity is the smallest positive integer $k$ such that $\omega^k = 1$. The primitive roots of unity are defined as $\omega_n^k$ where $\omega_n = e^{\frac{2\pi i}{n}}$ and $k \in \{0, 1, 2, \dots, n-1\}$ such that $\gcd(k, n) = 1$.
+
+For example, the primitive 4th roots of unity are $\{1, -1\}$. This is because only $k = 1$ and $k = 3$ are coprime to $n = 4$.
+
+## Equation for Cyclotomic Polynomials
+The $n$th cyclotomic polynomial is defined as $\Phi_n(x) = \prod_{k=1}^{\phi(n)} (x - \omega_n^k)$ where $\omega_n = e^{\frac{2\pi i}{n}}$ and $\phi(n)$ is the Euler totient function. This makes sense because we are construction a polynomial in its point value representation using the primitive roots of unity as the points.
+
+## Cyclotomic Rings
+Rings that are defined as $\it{t} = \mathbb{Z}[x]/(\Phi_n(x))$ have special properties that make them useful in cryptography. Cyclotomic rings of powers of two are useful in many cryptographic schemes because they are maximally sparse and provide an easy way to compute the modulus operation. Using non power of two cyclomics is also an area being studied because it may be much more efficient, but the tradeoff is that they are more delicate.
+
+## Conclusion
+Cyclotomic polynomials are useful in cryptography. Fully homomorphic encryption schemes like CKKS can utilize the cyclotomic ring structures because of their nice properties. They are also useful in other areas of mathematics such as number theory and algebraic geometry.
