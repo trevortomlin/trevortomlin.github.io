@@ -1,0 +1,30 @@
+---
+title: "Vandermonde Matrices"
+author: "Trevor Tomlin"
+date: "2023-08-9"
+categories: [mathematics]
+---
+
+# Understanding Vandermonde Matrices in Linear Algebra
+
+When studying linear algebra, one often comes across various types of matrices with unique properties and applications. One such matrix is the Vandermonde matrix. Named after the French mathematician Alexandre-Théophile Vandermonde, this matrix holds special significance in fields ranging from polynomial interpolation to signal processing. In this blog post, we will delve into the concept of Vandermonde matrices, their properties, and some of their important applications.
+
+## What is a Vandermonde Matrix?
+A Vandermond matrix is a $(m + 1)(n + 1)$ matrix of the form: $V(x_0, x_1, \dots,x_m) = \begin{bmatrix} 1 & x_0 & x_0^2 & \dots & x_0^n \\ 1 & x_1 & x_1^2 & \dots & x_1^n \\ \vdots & \vdots & \vdots & \ddots & \vdots \\ 1 & x_m & x_m^2 & \dots & x_m^n \end{bmatrix}$
+
+where $x_0, x_1, \dots, x_m$ are distinct real numbers. In other words, a Vandermonde matrix is a matrix whose columns are successive powers of a given vector.
+
+## Use Cases
+One use case of a Vandermond matrix is for polynomial interpolation. These matrices are used often in cryptography in schemes such as CKKS.
+
+If you are given the coefficients of a polynomial and want to evaluate it into point-value representation at a set of points you can use the equation $Va = y$. For example, suppose you have a polynomial $p(x) = 2x^2 + 3x + 1$ and you want to evaluate it at the points $x_0 = 1, x_1 = 2, x_2 = 3$. Then, you can use the Vandermonde matrix $V = \begin{bmatrix} 1 & 1 & 1 \\ 1 & 2 & 4 \\ 1 & 3 & 9 \end{bmatrix}$ to evaluate $p(x)$ at the points $x_0, x_1, x_2$ by computing $V\begin{bmatrix} 1 \\ 3 \\ 1 \end{bmatrix} = \begin{bmatrix} 6 \\ 17 \\ 38 \end{bmatrix}$. This is equivalent to evaluating $p(x)$ at the points $x_0, x_1, x_2$ by hand.
+
+Suppose you have a set of points $(x_0, y_0), (x_1, y_1), \dots, (x_m, y_m)$ where $x_0, x_1, \dots, x_m$ are distinct real numbers. We want to find a polynomial $p(x)$ of degree at most $m$ such that $p(x_i) = y_i$ for $i = 0, 1, \dots, m$. Let $V$ be the Vandermonde matrix with entries $V_{ij} = x_i^j$ for $i = 0, 1, \dots, m$ and $j = 0, 1, \dots, m$. Let $y = \begin{bmatrix} y_0 \\ y_1 \\ \vdots \\ y_m \end{bmatrix}$. Then, we can solve for the coefficients of the polynomial $p(x)$ by solving the system of equations $Vc = y$ where $c = \begin{bmatrix} c_0 \\ c_1 \\ \vdots \\ c_m \end{bmatrix}$ is the vector of coefficients of $p(x)$. This system of equations is guaranteed to have a unique solution since the Vandermonde matrix is invertible. Thus, we can find the coefficients of $p(x)$ by solving the system of equations $c = V^{-1}y$.
+
+The Discrete Fourier Transform is a specific Vandermonde matrix where the entries are $n^{th}$ roots of unity. By using regular linear algebra methods you can solve the DFT matrix in $O(n^2)$. The Fast Fourier Transform is an algorithm that computes the Discrete Fourier Transform in $O(n\log n)$ time.
+
+## Determinant
+The determinant of a square Vandermonde matrix is given by the formula $det(V) = \prod_{0 \leq i < j \leq n}(x_j - x_i)$. This formula might look familiar because it is also the formula for computing the Lagrange bases for polynomial interpolation.
+
+## Conclusion
+In conclusion, Vandermonde matrices are a fascinating and powerful concept in linear algebra with wide-ranging applications. Their distinct properties and versatility make them a valuable tool in various mathematical and engineering disciplines. Whether you're working on polynomial interpolation, signal processing, or other mathematical problems, understanding Vandermonde matrices can provide you with insights and techniques to solve complex challenges.
