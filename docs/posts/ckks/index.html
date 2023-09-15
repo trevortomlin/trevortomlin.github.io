@@ -7,9 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Trevor Tomlin">
-<meta name="dcterms.date" content="2023-06-25">
+<meta name="dcterms.date" content="2023-09-14">
 
-<title>Trevor’s Website - Shamir’s Secret Sharing</title>
+<title>Trevor’s Website - Introduction to CKKS</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -144,7 +144,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Shamir’s Secret Sharing</h1>
+      <h1 class="title">Introduction to CKKS</h1>
                                 <div class="quarto-categories">
                 <div class="quarto-category">cryptography</div>
               </div>
@@ -164,7 +164,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">June 25, 2023</p>
+        <p class="date">September 14, 2023</p>
       </div>
     </div>
     
@@ -182,78 +182,147 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
-<section id="shamirs-secret-sharing" class="level1">
-<h1>Shamir’s Secret Sharing</h1>
-<p>In the digital age, securing sensitive information is crucial. <strong>Shamir’s Secret Sharing</strong> (SSS) is a cryptographic technique that provides a way to distribute a secret among multiple parties, ensuring that the secret can only be reconstructed when a sufficient number of parties collaborate. This method, developed by Adi Shamir in 1979, offers a robust solution for protecting sensitive data such as encryption keys, passwords, or private documents.</p>
-<section id="how-shamirs-secret-sharing-works" class="level2">
-<h2 class="anchored" data-anchor-id="how-shamirs-secret-sharing-works">How Shamir’s Secret Sharing Works</h2>
-<p>Shamir’s Secret Sharing employs polynomial interpolation to split a secret into multiple shares. The secret can be reconstructed only by combining a sufficient number of shares, making it mathematically infeasible to uncover the secret with fewer shares. Here’s a step-by-step breakdown:</p>
-<ol type="1">
-<li><strong>Secret Generation</strong>: The secret holder generates a secret value.</li>
-<li><strong>Polynomial Generation</strong>: A polynomial of degree k-1 is created, where k is the minimum number of shares required to reconstruct the secret. The constant term of the polynomial represents the secret.</li>
-<li><strong>Share Generation</strong>: The secret holder calculates n shares by substituting different values of x into the polynomial, where n is the total number of shares to be distributed.</li>
-<li><strong>Share Distribution</strong>: Each share is given to a different party. The secret holder doesn’t need to disclose the secret itself, just the shares.</li>
-<li><strong>Secret Reconstruction</strong>: When k or more shares are combined, the secret can be reconstructed using Lagrange interpolation, a technique that recovers the polynomial based on the shares. With fewer than k shares, the secret remains secure.</li>
-</ol>
-<p>Shamir’s secret sharing uses the Lagrange interpolation theorem to reconstruct the secret. This theorem states that a polynomial of degree k-1 can be uniquely determined by k points on the polynomial. In this case, the points are the shares, and the polynomial is the secret.</p>
-</section>
-<section id="real-world-applications" class="level2">
-<h2 class="anchored" data-anchor-id="real-world-applications">Real-World Applications</h2>
-<p>Shamir’s Secret Sharing has found applications in various domains where secure data distribution and protection are essential:</p>
+<section id="an-introduction-to-the-heaan-ckks-homomorphic-encryption-scheme" class="level1">
+<h1>An introduction to the <strong>HEAAN / CKKS</strong> homomorphic encryption scheme</h1>
+<p>The <strong>HEAAN / CKKS</strong> scheme introduced in the paper, <em>Homomorphic Encryption for Arithmetic of Approximate Numbers</em> or named after the authors, Jung Hee Cheon, Andrey Kim, Miran Kim, and Yongsoo Song is a leveled homomorphic scheme based upon the Ring Learning with Errors (RLWE) problem that allows encypted computation on real real numbers. This scheme differs from BGV/BFV schemes because it works on real numbers rather than integers.</p>
+<section id="notation" class="level2">
+<h2 class="anchored" data-anchor-id="notation">Notation</h2>
+<p>Understanding the following notations will be helpful for reading this blog post:</p>
 <ul>
-<li><strong>Cryptocurrency</strong>: In decentralized cryptocurrencies, private keys can be divided into shares using Shamir’s Secret Sharing. This ensures that multiple parties need to collaborate to authorize transactions or access funds securely.</li>
-<li><strong>Data Protection</strong>: Sensitive data, such as encryption keys or personal information, can be securely distributed across multiple servers or cloud providers using Shamir’s Secret Sharing. This mitigates the risk of data breaches and unauthorized access.</li>
-<li><strong>Disaster Recovery</strong>: Shamir’s Secret Sharing is utilized in disaster recovery scenarios to safeguard critical information. By distributing shares across different locations or individuals, the recovery process becomes resilient against localized failures or data loss.</li>
+<li><span class="math inline">\(\mathcal{R} = \mathbb{Z}[X]/(X^N +1)\)</span></li>
+<li><span class="math inline">\(\mathbb{Z}_q\)</span> is in the range <span class="math inline">\((−q/2, q/2]\)</span></li>
+<li><span class="math inline">\(\lfloor x \rceil\)</span> represents the rounding of the real number x to the closest integer</li>
 </ul>
 </section>
-<section id="example" class="level2">
-<h2 class="anchored" data-anchor-id="example">Example</h2>
-<p>We are going to show an example of SSS using integer arithmetic. This is not the most secure way to implement SSS, but it is the easiest to understand. In practice we would use a finite field.</p>
-<p>Say we want to split our secret in a 2-out-of-3 scheme. This means that we need 2 shares to reconstruct the secret, and we have 3 shares in total.</p>
-<p>First, we establish the secret we want to share: <span class="math inline">\(a_0 = 9702\)</span>.</p>
-<p>Then we generate k-1 random coefficients for our polynomial. In this case, k = 2, so we only need one random coefficient: <span class="math inline">\(a_1 = 1337\)</span>.</p>
-<p>The polynomial is then: <span class="math inline">\(f(x) = 9702 + 1337x\)</span>.</p>
-<p>We can now generate our shares by substituting different values of x into the polynomial. We will use the values 1, 2, and 3.</p>
-<p><span class="math inline">\(S_1 = f(1) = 9702 + 1337(1) = 11039\)</span> <span class="math inline">\(S_2 = f(2) = 9702 + 1337(2) = 12376\)</span> <span class="math inline">\(S_3 = f(3) = 9702 + 1337(3) = 13713\)</span></p>
-<p>To reconstruct the secret we need to use Lagrange Interpolation.</p>
-<p><a href="https://mathworld.wolfram.com/LagrangeInterpolatingPolynomial.html">Wolfram Mathworld</a> provides a formula for Lagrange interpolation:</p>
-<p>For a polynomial <span class="math inline">\(P(x)\)</span> of degree <span class="math inline">\(\le (n-1)\)</span>, that passes through <span class="math inline">\(n\)</span> points <span class="math inline">\((x_0, y_0), (x_1, y_1), \ldots, (x_{n-1}, y_{n-1})\)</span>, the Lagrange interpolation formula is:</p>
-<p><span class="math inline">\(\quad P(x) = \Sigma_{i=0}^{n} P_j(x)y_i\)</span></p>
-<p>where</p>
-<p><span class="math inline">\(\quad P_j(x) = \Pi_{k=1, k \neq j}^{n} \frac{x - x_k}{x_j - x_k}\)</span></p>
-<p>We can now distribute these shares to different parties. The secret holder does not need to disclose the secret itself, just the shares.</p>
-<p>When we want to reconstruct the secret, we need to combine at least 2 shares. Let’s combine shares 1 and 2:</p>
+<section id="encoding" class="level2">
+<h2 class="anchored" data-anchor-id="encoding">Encoding</h2>
+<p>This scheme operates allows us to encode a vector, <span class="math inline">\(\mathbb{C}^{N/2}\)</span>, into the ciphertext space, <span class="math inline">\(\mathcal{R}_q = (\mathbb{Z}/q\mathbb{Z})[X]/(X^N +1)\)</span> using a ring isomorphism and cannoncial embedding map.</p>
+<p>A cyclotomic polynomial is a polynomial with integer coefficients whose roots are all primitive. An example would be the 4th cyclotomic polynomial or <span class="math inline">\(\phi_4(x) = x^2 + 1\)</span>. One important property of cyclotomic polynomials is that if N is a power of two, then the polynomial is equal to <span class="math inline">\(x^{N/2} + 1\)</span>. More information about these polynomials can be found here on <a href="https://en.wikipedia.org/wiki/Cyclotomic_polynomial">Wikipedia</a></p>
+<p>For any cyclotomic polynomial, <span class="math inline">\(a\)</span>, we can say that <span class="math inline">\(m(\xi^j) = m(\overline{\xi^{-j}})\)</span></p>
 <div class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> lagrange_interpolation(x, points):</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    result <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(points)):</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>        xi, yi <span class="op">=</span> points[i]</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>        term <span class="op">=</span> yi</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(points)):</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> i <span class="op">!=</span> j:</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>                xj, _ <span class="op">=</span> points[j]</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>                term <span class="op">*=</span> (x <span class="op">-</span> xj) <span class="op">/</span> (xi <span class="op">-</span> xj)</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>        result <span class="op">+=</span> term</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> result</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Given points</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>points <span class="op">=</span> [(<span class="dv">1</span>, <span class="dv">11039</span>), (<span class="dv">2</span>, <span class="dv">12376</span>)]</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Value to interpolate at</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform Lagrange interpolation</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>interpolated_value <span class="op">=</span> lagrange_interpolation(x, points)</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"The interpolated value at x = </span><span class="sc">{</span>x<span class="sc">}</span><span class="ss"> is </span><span class="sc">{</span>interpolated_value<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> math</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> primitive_nth_roots_of_unity(n: <span class="bu">int</span>) <span class="op">-&gt;</span> np.ndarray:</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    roots <span class="op">=</span> []</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, n<span class="op">+</span><span class="dv">1</span>):</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> math.gcd(i, n) <span class="op">==</span> <span class="dv">1</span>:</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>            root <span class="op">=</span> np.e <span class="op">**</span> (<span class="dv">2</span> <span class="op">*</span> np.pi <span class="op">*</span> <span class="ot">1j</span> <span class="op">*</span> i <span class="op">/</span> n)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>            roots.append(root)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.array(roots)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co">#print()</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>eigth_prim_roots <span class="op">=</span> primitive_nth_roots_of_unity(<span class="dv">8</span>)</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, r <span class="kw">in</span> <span class="bu">enumerate</span>(eigth_prim_roots):</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Root #</span><span class="sc">{</span>i<span class="op">+</span><span class="dv">1</span><span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>r<span class="sc">}</span><span class="ch">\n</span><span class="ss">Conjugate: </span><span class="sc">{</span>np<span class="sc">.</span>conjugate(r)<span class="sc">}</span><span class="ch">\n</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
-<pre><code>The interpolated value at x = 0 is 9702.0</code></pre>
+<pre><code>Root #1: (0.7071067811865476+0.7071067811865475j)
+Conjugate: (0.7071067811865476-0.7071067811865475j)
+
+Root #2: (-0.7071067811865475+0.7071067811865476j)
+Conjugate: (-0.7071067811865475-0.7071067811865476j)
+
+Root #3: (-0.7071067811865477-0.7071067811865475j)
+Conjugate: (-0.7071067811865477+0.7071067811865475j)
+
+Root #4: (0.7071067811865474-0.7071067811865477j)
+Conjugate: (0.7071067811865474+0.7071067811865477j)
+</code></pre>
 </div>
 </div>
-<p>This is the secret we started with, so we have successfully reconstructed the secret.</p>
+<p>From this week can see that <span class="math inline">\(\xi^1 = \overline{\xi^7}\)</span> and <span class="math inline">\(\xi^3 = \overline{\xi^5}\)</span>.</p>
+<div class="cell" data-execution_count="2">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Number of primitive roots of unity</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">8</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the primitive 8th roots of unity</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>roots <span class="op">=</span> [np.exp(<span class="ot">2j</span> <span class="op">*</span> np.pi <span class="op">*</span> k <span class="op">/</span> n) <span class="cf">for</span> k <span class="kw">in</span> <span class="bu">range</span>(n) <span class="cf">if</span> np.gcd(k, n) <span class="op">==</span> <span class="dv">1</span>]</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Separate real and imaginary parts</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>real_parts <span class="op">=</span> [root.real <span class="cf">for</span> root <span class="kw">in</span> roots]</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>imaginary_parts <span class="op">=</span> [root.imag <span class="cf">for</span> root <span class="kw">in</span> roots]</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Define labels for the roots</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>labels <span class="op">=</span> [<span class="st">'xi 1'</span>, <span class="st">'xi 3'</span>, <span class="st">'xi 5'</span>, <span class="st">'xi 7'</span>]</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a scatter plot with labels</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, (x, y) <span class="kw">in</span> <span class="bu">enumerate</span>(<span class="bu">zip</span>(real_parts, imaginary_parts)):</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    plt.scatter(x, y, color<span class="op">=</span><span class="st">'red'</span>, label<span class="op">=</span>labels[i])</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    plt.text(x <span class="op">+</span> <span class="fl">0.1</span>, y, labels[i], fontsize<span class="op">=</span><span class="dv">12</span>)</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Add lines from the origin to each point</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> root <span class="kw">in</span> roots:</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    plt.plot([<span class="dv">0</span>, root.real], [<span class="dv">0</span>, root.imag], linestyle<span class="op">=</span><span class="st">'--'</span>, color<span class="op">=</span><span class="st">'blue'</span>)</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Add labels and a legend</span></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Real Part'</span>)</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Imaginary Part'</span>)</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>plt.axhline(<span class="dv">0</span>, color<span class="op">=</span><span class="st">'black'</span>, linewidth<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>plt.axvline(<span class="dv">0</span>, color<span class="op">=</span><span class="st">'black'</span>, linewidth<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>plt.grid(color<span class="op">=</span><span class="st">'gray'</span>, linestyle<span class="op">=</span><span class="st">'--'</span>, linewidth<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a><span class="co"># Set the aspect ratio to be equal</span></span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>plt.axis(<span class="st">'equal'</span>)</span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a><span class="co"># Set plot limits</span></span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>plt.xlim(<span class="op">-</span><span class="fl">1.5</span>, <span class="fl">1.5</span>)</span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>plt.ylim(<span class="op">-</span><span class="fl">1.5</span>, <span class="fl">1.5</span>)</span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a><span class="co"># Title</span></span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="ss">f'Primitive 8th Roots of Unity with Labels'</span>)</span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a><span class="co"># Show the plot</span></span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="index_files/figure-html/cell-3-output-1.png" width="619" height="449"></p>
+</div>
+</div>
+<p>This makes intuitive sense if we look at a graph of the roots and see that primitive roots of unity are always symmetric over the x axis.</p>
+<p>The subring <span class="math inline">\(\mathbb{H}\)</span> of <span class="math inline">\(\mathbb{C}^N\)</span> is defined as</p>
+<p><span class="math inline">\(\sigma(x)\)</span> is equivalent to the evaluation of a polynomial on the roots of unity for the given cyclotomic polynomial which will produce an element in <span class="math inline">\(\mathbb{C}^N\)</span>.</p>
+<ol type="1">
+<li>We define an operation <span class="math inline">\(\pi^{-1}\)</span> which</li>
+</ol>
 </section>
-<section id="conclusion" class="level2">
-<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
-<p>Shamir’s Secret Sharing provides a powerful method for distributing and safeguarding secrets among multiple parties. By utilizing polynomial interpolation and Lagrange interpolation, it ensures that sensitive information remains secure unless a sufficient number of shares are combined. This technique finds applications in various areas, including cryptography, key management, data protection, and disaster recovery.</p>
+<section id="decoding" class="level2">
+<h2 class="anchored" data-anchor-id="decoding">Decoding</h2>
+</section>
+<section id="encryption" class="level2">
+<h2 class="anchored" data-anchor-id="encryption">Encryption</h2>
+</section>
+<section id="decryption" class="level2">
+<h2 class="anchored" data-anchor-id="decryption">Decryption</h2>
+</section>
+<section id="addition-of-constants" class="level2">
+<h2 class="anchored" data-anchor-id="addition-of-constants">Addition of Constants</h2>
+</section>
+<section id="addition-of-ciphertexts" class="level2">
+<h2 class="anchored" data-anchor-id="addition-of-ciphertexts">Addition of Ciphertexts</h2>
+</section>
+<section id="multiplication-of-constants" class="level2">
+<h2 class="anchored" data-anchor-id="multiplication-of-constants">Multiplication of Constants</h2>
+</section>
+<section id="multiplication-of-ciphertexts" class="level2">
+<h2 class="anchored" data-anchor-id="multiplication-of-ciphertexts">Multiplication of Ciphertexts</h2>
+</section>
+<section id="next-steps" class="level2">
+<h2 class="anchored" data-anchor-id="next-steps">Next Steps</h2>
+</section>
+<section id="resources" class="level2">
+<h2 class="anchored" data-anchor-id="resources">Resources</h2>
 
 
 </section>
