@@ -194,11 +194,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><span class="math inline">\(\lfloor x \rceil\)</span> represents the rounding of the real number x to the closest integer</li>
 </ul>
 </section>
+<section id="parameters" class="level2">
+<h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
+<p><span class="math inline">\(\Delta\)</span> is the scaling factor</p>
+</section>
 <section id="encoding" class="level2">
 <h2 class="anchored" data-anchor-id="encoding">Encoding</h2>
 <p>This scheme operates allows us to encode a vector, <span class="math inline">\(\mathbb{C}^{N/2}\)</span>, into the ciphertext space, <span class="math inline">\(\mathcal{R}_q = (\mathbb{Z}/q\mathbb{Z})[X]/(X^N +1)\)</span> using a ring isomorphism and cannoncial embedding map.</p>
-<p>A cyclotomic polynomial is a polynomial with integer coefficients whose roots are all primitive. An example would be the 4th cyclotomic polynomial or <span class="math inline">\(\phi_4(x) = x^2 + 1\)</span>. One important property of cyclotomic polynomials is that if N is a power of two, then the polynomial is equal to <span class="math inline">\(x^{N/2} + 1\)</span>. More information about these polynomials can be found here on <a href="https://en.wikipedia.org/wiki/Cyclotomic_polynomial">Wikipedia</a></p>
-<p>For any cyclotomic polynomial, <span class="math inline">\(a\)</span>, we can say that <span class="math inline">\(m(\xi^j) = m(\overline{\xi^{-j}})\)</span></p>
+<p>A cyclotomic polynomial is a polynomial with integer coefficients whose roots are all primitive. An example would be the 4th cyclotomic polynomial or <span class="math inline">\(\phi_4(x) = x^2 + 1\)</span>. One important property of cyclotomic polynomials is that if N is a power of two, then the polynomial is equal to <span class="math inline">\(x^{N/2} + 1\)</span>.</p>
+<!-- ADD MORE ABOUT WHY POWERS OF 2 ARE GOOD -->
+<p><a href="https://web.eecs.umich.edu/~cpeikert/pubs/toolkit.pdf">A Toolkit for Ring-LWE Cryptography</a></p>
+<p>More information about these polynomials can be found here on <a href="https://en.wikipedia.org/wiki/Cyclotomic_polynomial">Wikipedia</a></p>
+<p>For any cyclotomic polynomial, <span class="math inline">\(a\)</span>, we can say that <span class="math inline">\(a(\xi^j) = a(\overline{\xi^{-j}})\)</span></p>
 <div class="cell" data-execution_count="1">
 <details>
 <summary>Code</summary>
@@ -215,11 +222,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.array(roots)</span>
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co">#print()</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>eigth_prim_roots <span class="op">=</span> primitive_nth_roots_of_unity(<span class="dv">8</span>)</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, r <span class="kw">in</span> <span class="bu">enumerate</span>(eigth_prim_roots):</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Root #</span><span class="sc">{</span>i<span class="op">+</span><span class="dv">1</span><span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>r<span class="sc">}</span><span class="ch">\n</span><span class="ss">Conjugate: </span><span class="sc">{</span>np<span class="sc">.</span>conjugate(r)<span class="sc">}</span><span class="ch">\n</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>eigth_prim_roots <span class="op">=</span> primitive_nth_roots_of_unity(<span class="dv">8</span>)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, r <span class="kw">in</span> <span class="bu">enumerate</span>(eigth_prim_roots):</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Root #</span><span class="sc">{</span>i<span class="op">+</span><span class="dv">1</span><span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>r<span class="sc">}</span><span class="ch">\n</span><span class="ss">Conjugate: </span><span class="sc">{</span>np<span class="sc">.</span>conjugate(r)<span class="sc">}</span><span class="ch">\n</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Root #1: (0.7071067811865476+0.7071067811865475j)
@@ -243,58 +249,69 @@ Conjugate: (0.7071067811865474+0.7071067811865477j)
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Number of primitive roots of unity</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">8</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the primitive 8th roots of unity</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>roots <span class="op">=</span> [np.exp(<span class="ot">2j</span> <span class="op">*</span> np.pi <span class="op">*</span> k <span class="op">/</span> n) <span class="cf">for</span> k <span class="kw">in</span> <span class="bu">range</span>(n) <span class="cf">if</span> np.gcd(k, n) <span class="op">==</span> <span class="dv">1</span>]</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Separate real and imaginary parts</span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>real_parts <span class="op">=</span> [root.real <span class="cf">for</span> root <span class="kw">in</span> roots]</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>imaginary_parts <span class="op">=</span> [root.imag <span class="cf">for</span> root <span class="kw">in</span> roots]</span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Define labels for the roots</span></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>labels <span class="op">=</span> [<span class="st">'xi 1'</span>, <span class="st">'xi 3'</span>, <span class="st">'xi 5'</span>, <span class="st">'xi 7'</span>]</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">8</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>roots <span class="op">=</span> [np.exp(<span class="ot">2j</span> <span class="op">*</span> np.pi <span class="op">*</span> k <span class="op">/</span> n) <span class="cf">for</span> k <span class="kw">in</span> <span class="bu">range</span>(n) <span class="cf">if</span> np.gcd(k, n) <span class="op">==</span> <span class="dv">1</span>]</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>real_parts <span class="op">=</span> [root.real <span class="cf">for</span> root <span class="kw">in</span> roots]</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>imaginary_parts <span class="op">=</span> [root.imag <span class="cf">for</span> root <span class="kw">in</span> roots]</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>labels <span class="op">=</span> [<span class="st">'ξ^1'</span>, <span class="st">'ξ^3'</span>, <span class="st">'ξ^5'</span>, <span class="st">'ξ^7'</span>]</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, (x, y) <span class="kw">in</span> <span class="bu">enumerate</span>(<span class="bu">zip</span>(real_parts, imaginary_parts)):</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    plt.scatter(x, y, color<span class="op">=</span><span class="st">'red'</span>, label<span class="op">=</span>labels[i])</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    plt.text(x <span class="op">+</span> <span class="fl">0.1</span>, y, labels[i], fontsize<span class="op">=</span><span class="dv">12</span>)</span>
 <span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a scatter plot with labels</span></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, (x, y) <span class="kw">in</span> <span class="bu">enumerate</span>(<span class="bu">zip</span>(real_parts, imaginary_parts)):</span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    plt.scatter(x, y, color<span class="op">=</span><span class="st">'red'</span>, label<span class="op">=</span>labels[i])</span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    plt.text(x <span class="op">+</span> <span class="fl">0.1</span>, y, labels[i], fontsize<span class="op">=</span><span class="dv">12</span>)</span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Add lines from the origin to each point</span></span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> root <span class="kw">in</span> roots:</span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    plt.plot([<span class="dv">0</span>, root.real], [<span class="dv">0</span>, root.imag], linestyle<span class="op">=</span><span class="st">'--'</span>, color<span class="op">=</span><span class="st">'blue'</span>)</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> root <span class="kw">in</span> roots:</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    plt.plot([<span class="dv">0</span>, root.real], [<span class="dv">0</span>, root.imag], linestyle<span class="op">=</span><span class="st">'--'</span>, color<span class="op">=</span><span class="st">'blue'</span>)</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Real Part'</span>)</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Imaginary Part'</span>)</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>plt.axhline(<span class="dv">0</span>, color<span class="op">=</span><span class="st">'black'</span>, linewidth<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>plt.axvline(<span class="dv">0</span>, color<span class="op">=</span><span class="st">'black'</span>, linewidth<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>plt.grid(color<span class="op">=</span><span class="st">'gray'</span>, linestyle<span class="op">=</span><span class="st">'--'</span>, linewidth<span class="op">=</span><span class="fl">0.5</span>)</span>
 <span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Add labels and a legend</span></span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Real Part'</span>)</span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Imaginary Part'</span>)</span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>plt.axhline(<span class="dv">0</span>, color<span class="op">=</span><span class="st">'black'</span>, linewidth<span class="op">=</span><span class="fl">0.5</span>)</span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>plt.axvline(<span class="dv">0</span>, color<span class="op">=</span><span class="st">'black'</span>, linewidth<span class="op">=</span><span class="fl">0.5</span>)</span>
-<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>plt.grid(color<span class="op">=</span><span class="st">'gray'</span>, linestyle<span class="op">=</span><span class="st">'--'</span>, linewidth<span class="op">=</span><span class="fl">0.5</span>)</span>
-<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
-<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a><span class="co"># Set the aspect ratio to be equal</span></span>
-<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>plt.axis(<span class="st">'equal'</span>)</span>
-<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a><span class="co"># Set plot limits</span></span>
-<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>plt.xlim(<span class="op">-</span><span class="fl">1.5</span>, <span class="fl">1.5</span>)</span>
-<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>plt.ylim(<span class="op">-</span><span class="fl">1.5</span>, <span class="fl">1.5</span>)</span>
-<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a><span class="co"># Title</span></span>
-<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="ss">f'Primitive 8th Roots of Unity with Labels'</span>)</span>
-<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a><span class="co"># Show the plot</span></span>
-<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>plt.axis(<span class="st">'equal'</span>)</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>plt.xlim(<span class="op">-</span><span class="fl">1.5</span>, <span class="fl">1.5</span>)</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>plt.ylim(<span class="op">-</span><span class="fl">1.5</span>, <span class="fl">1.5</span>)</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="ss">f'Primitive 8th Roots of Unity'</span>)</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display">
 <p><img src="index_files/figure-html/cell-3-output-1.png" width="619" height="449"></p>
 </div>
 </div>
 <p>This makes intuitive sense if we look at a graph of the roots and see that primitive roots of unity are always symmetric over the x axis.</p>
-<p>The subring <span class="math inline">\(\mathbb{H}\)</span> of <span class="math inline">\(\mathbb{C}^N\)</span> is defined as</p>
+<p><span class="math inline">\(\mathbb{H}\)</span> of is a subring of <span class="math inline">\(\mathbb{C}^N\)</span> that contains elements of <span class="math inline">\(\mathbb{C}^N\)</span> where the conjugate is also in the subring.</p>
+<p>We define an operation <span class="math inline">\(\pi^{-1}\)</span> which expands a vector <span class="math inline">\(\mathbb{C}^{N/2}\)</span> into <span class="math inline">\(\mathbb{H}\)</span></p>
+<div class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> pi_inverse(z: np.ndarray) <span class="op">-&gt;</span> np.ndarray:</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.concatenate([z, [np.conjugate(x) <span class="cf">for</span> x <span class="kw">in</span> z[::<span class="op">-</span><span class="dv">1</span>]]])</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>z <span class="op">=</span> np.array([<span class="dv">3</span><span class="op">+</span><span class="ot">4j</span>,<span class="dv">2</span><span class="op">-</span><span class="ot">1j</span>])</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(z)):</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"i: </span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">, </span><span class="sc">{</span>z[i]<span class="sc">}</span><span class="ss"> = i: </span><span class="sc">{</span>(<span class="op">-</span>i<span class="op">-</span><span class="dv">1</span>) <span class="op">%</span> <span class="dv">4</span><span class="sc">}</span><span class="ss">, </span><span class="sc">{</span>np<span class="sc">.</span>conjugate(z[<span class="op">-</span>i])<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>()</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">list</span>(pi_inverse(z)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>i: 0, (3+4j) = i: 3, (3-4j)
+i: 1, (2-1j) = i: 2, (2+1j)
+
+[(3+4j), (2-1j), (2+1j), (3-4j)]</code></pre>
+</div>
+</div>
 <p><span class="math inline">\(\sigma(x)\)</span> is equivalent to the evaluation of a polynomial on the roots of unity for the given cyclotomic polynomial which will produce an element in <span class="math inline">\(\mathbb{C}^N\)</span>.</p>
+<p>Imagine <span class="math inline">\(\Delta\)</span> is 10,000. We can say that <span class="math inline">\(\frac{(\Delta * m + \Delta * n)}{\Delta} = m + n\)</span>. For example let <span class="math inline">\(m = 3.14\)</span> and <span class="math inline">\(n = 2.72\)</span>. We expect the result to equal 5.86.</p>
 <ol type="1">
-<li>We define an operation <span class="math inline">\(\pi^{-1}\)</span> which</li>
+<li>Multiply <span class="math inline">\(m\)</span> by <span class="math inline">\(\Delta\)</span>, <span class="math inline">\(\Delta * m = 31,400\)</span></li>
+<li>Multiply <span class="math inline">\(n\)</span> by <span class="math inline">\(\Delta\)</span>, <span class="math inline">\(\Delta * n = 27,200\)</span></li>
+<li>Add <span class="math inline">\(\Delta m + \Delta n = 58,600\)</span></li>
+<li>Divide result by <span class="math inline">\(\Delta\)</span>, <span class="math inline">\(58,600 / \Delta = 5.86\)</span></li>
 </ol>
 </section>
 <section id="decoding" class="level2">

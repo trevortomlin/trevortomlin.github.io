@@ -18,6 +18,10 @@ Understanding the following notations will be helpful for reading this blog post
 * $\mathbb{Z}_q$ is in the range $(−q/2, q/2]$
 * $\lfloor x \rceil$ represents the rounding of the real number x to the closest integer
 
+## Parameters
+
+$\Delta$ is the scaling factor
+
 ## Encoding 
 This scheme operates allows us to encode a vector, $\mathbb{C}^{N/2}$, into the ciphertext space, $\mathcal{R}_q = (\mathbb{Z}/q\mathbb{Z})[X]/(X^N +1)$ 
 using a ring isomorphism and cannoncial embedding map. 
@@ -25,10 +29,15 @@ using a ring isomorphism and cannoncial embedding map.
 A cyclotomic polynomial is a polynomial with integer coefficients whose roots are all
 primitive. An example would be the 4th cyclotomic polynomial or $\phi_4(x) = x^2 + 1$.
 One important property of cyclotomic polynomials is that if N is a power of two, then
-the polynomial is equal to $x^{N/2} + 1$. More information about these polynomials can be 
+the polynomial is equal to $x^{N/2} + 1$. 
+
+<!-- ADD MORE ABOUT WHY POWERS OF 2 ARE GOOD -->
+[A Toolkit for Ring-LWE Cryptography](https://web.eecs.umich.edu/~cpeikert/pubs/toolkit.pdf)
+
+More information about these polynomials can be 
 found here on [Wikipedia](https://en.wikipedia.org/wiki/Cyclotomic_polynomial)
 
-For any cyclotomic polynomial, $a$, we can say that $m(\xi^j) = m(\overline{\xi^{-j}})$ 
+For any cyclotomic polynomial, $a$, we can say that $a(\xi^j) = a(\overline{\xi^{-j}})$ 
 
 
 ```{python}
@@ -47,7 +56,6 @@ def primitive_nth_roots_of_unity(n: int) -> np.ndarray:
 
     return np.array(roots)
 
-#print()
 eigth_prim_roots = primitive_nth_roots_of_unity(8)
 
 for i, r in enumerate(eigth_prim_roots):
@@ -63,59 +71,67 @@ From this week can see that $\xi^1 = \overline{\xi^7}$ and $\xi^3 = \overline{\x
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Number of primitive roots of unity
 n = 8
 
-# Calculate the primitive 8th roots of unity
 roots = [np.exp(2j * np.pi * k / n) for k in range(n) if np.gcd(k, n) == 1]
 
-# Separate real and imaginary parts
 real_parts = [root.real for root in roots]
 imaginary_parts = [root.imag for root in roots]
 
-# Define labels for the roots
 labels = ['ξ^1', 'ξ^3', 'ξ^5', 'ξ^7']
 
-# Create a scatter plot with labels
 for i, (x, y) in enumerate(zip(real_parts, imaginary_parts)):
     plt.scatter(x, y, color='red', label=labels[i])
     plt.text(x + 0.1, y, labels[i], fontsize=12)
 
-# Add lines from the origin to each point
 for root in roots:
     plt.plot([0, root.real], [0, root.imag], linestyle='--', color='blue')
 
-# Add labels and a legend
 plt.xlabel('Real Part')
 plt.ylabel('Imaginary Part')
 plt.axhline(0, color='black', linewidth=0.5)
 plt.axvline(0, color='black', linewidth=0.5)
 plt.grid(color='gray', linestyle='--', linewidth=0.5)
-plt.legend()
 
-# Set the aspect ratio to be equal
 plt.axis('equal')
 
-# Set plot limits
 plt.xlim(-1.5, 1.5)
 plt.ylim(-1.5, 1.5)
 
-# Title
-plt.title(f'Primitive 8th Roots of Unity with Labels')
+plt.title(f'Primitive 8th Roots of Unity')
 
-# Show the plot
 plt.show()
 ```
 
 This makes intuitive sense if we look at a graph of the roots and see that primitive roots of unity are always symmetric over the x axis.
 
-The subring $\mathbb{H}$ of $\mathbb{C}^N$ is defined as
+$\mathbb{H}$ of is a subring of $\mathbb{C}^N$ that contains elements of $\mathbb{C}^N$ where the conjugate is also in the subring.
 
+We define an operation $\pi^{-1}$ which expands a vector $\mathbb{C}^{N/2}$ into $\mathbb{H}$
+
+```{python}
+def pi_inverse(z: np.ndarray) -> np.ndarray:
+    return np.concatenate([z, [np.conjugate(x) for x in z[::-1]]])
+
+z = np.array([3+4j,2-1j])
+
+for i in range(len(z)):
+    print(f"i: {i}, {z[i]} = i: {(-i-1) % 4}, {np.conjugate(z[-i])}")
+
+print()
+print(list(pi_inverse(z)))
+```
 
 $\sigma(x)$ is equivalent to the evaluation of a polynomial on the roots of unity
 for the given cyclotomic polynomial which will produce an element in $\mathbb{C}^N$. 
 
-1. We define an operation $\pi^{-1}$ which 
+Imagine $\Delta$ is 10,000. We can say that $\frac{(\Delta m + \Delta n)}{\Delta} =  m + n$. 
+For example let $m = 3.14$ and $n = 2.72$. We expect the result to equal 5.86.
+
+1. Multiply $m$ by $\Delta$, $\Delta * m = 31,400$
+2. Multiply $n$ by $\Delta$, $\Delta * n = 27,200$
+3. Add $\Delta m + \Delta n = 58,600$
+4. Divide result by $\Delta$, $58,600 / \Delta = 5.86$
 
 ## Decoding
 
