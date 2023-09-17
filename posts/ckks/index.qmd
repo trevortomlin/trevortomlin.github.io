@@ -125,13 +125,34 @@ print(list(pi_inverse(z)))
 $\sigma(x)$ is equivalent to the evaluation of a polynomial on the roots of unity
 for the given cyclotomic polynomial which will produce an element in $\mathbb{C}^N$. 
 
-Imagine $\Delta$ is 10,000. We can say that $\frac{(\Delta m + \Delta n)}{\Delta} =  m + n$. 
-For example let $m = 3.14$ and $n = 2.72$. We expect the result to equal 5.86.
+Imagine $\Delta$ is 10,000. We can say that $\frac{(\Delta m * \Delta n)}{\Delta^2} =  m * n$. 
+For example let $m = 3.14$ and $n = 2.72$. We expect the result to equal 8.5408.
 
 1. Multiply $m$ by $\Delta$, $\Delta * m = 31,400$
 2. Multiply $n$ by $\Delta$, $\Delta * n = 27,200$
-3. Add $\Delta m + \Delta n = 58,600$
-4. Divide result by $\Delta$, $58,600 / \Delta = 5.86$
+3. Add $\Delta m * \Delta n = 854,080,000$
+4. Divide result by $\Delta^2$, $854,080,000 / \Delta^2 = 8.5408$
+
+The canonical embedding $\sigma$ is defined as $\sigma : \mathbb{R}[X]/(X^N +1) \rightarrow \mathbb{C}^N$ which is equaluating the polynomial on
+the primitive complex roots of unity to get a vector of points
+Its inverse would be $\sigma^{-1} : \mathbb{C}^N \rightarrow \mathbb{R}[X]/(X^N +1)$ which takes a list of points and produces a polynomial.
+
+An element in $\mathbb{H}$ is not necessarily an element in $\sigma(\mathcal{R})$ so we have to project each element into $\sigma(\mathcal{R})$.
+
+We want to project the elements of $\mathbb{H}$ onto the bases of $\sigma(\mathcal{R})$ which are $\beta = (\sigma(1),\sigma(X),\dots,\sigma(X^{N−1}))$ and to have integer coefficients rather than complex ones.
+
+A technique for this discretization is called "coordinate-wise randomized rounding" and is explained in section 2.4.2 of [A Toolkit for Ring-LWE Cryptography](https://web.eecs.umich.edu/~cpeikert/pubs/toolkit.pdf).
+
+The first step is to project the elements of our vector $z$ onto the bases of $\sigma(\mathcal{R})$.
+
+This can be done by using the vector projection equation first learning in a college algebra course.
+It is defined as $proj_\beta z = \frac{z * \beta}{\left\| \beta \right\|} * \beta$.
+
+After that we will have a polynomial that has the same bases of $\sigma(\mathcal{R})$, but we still need to round it so that it has integer coefficients.
+
+
+
+
 
 ## Decoding
 
@@ -149,4 +170,4 @@ For example let $m = 3.14$ and $n = 2.72$. We expect the result to equal 5.86.
 
 ## Next Steps
 
-## Resources
+## References
