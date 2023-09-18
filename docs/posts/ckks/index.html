@@ -306,13 +306,79 @@ i: 1, (2-1j) = i: 2, (2+1j)
 </div>
 </div>
 <p><span class="math inline">\(\sigma(x)\)</span> is equivalent to the evaluation of a polynomial on the roots of unity for the given cyclotomic polynomial which will produce an element in <span class="math inline">\(\mathbb{C}^N\)</span>.</p>
-<p>Imagine <span class="math inline">\(\Delta\)</span> is 10,000. We can say that <span class="math inline">\(\frac{(\Delta * m + \Delta * n)}{\Delta} = m + n\)</span>. For example let <span class="math inline">\(m = 3.14\)</span> and <span class="math inline">\(n = 2.72\)</span>. We expect the result to equal 5.86.</p>
+<p>Imagine <span class="math inline">\(\Delta\)</span> is 10,000. We can say that <span class="math inline">\(\frac{(\Delta m * \Delta n)}{\Delta^2} = m * n\)</span>. For example let <span class="math inline">\(m = 3.14\)</span> and <span class="math inline">\(n = 2.72\)</span>. We expect the result to equal 8.5408.</p>
 <ol type="1">
 <li>Multiply <span class="math inline">\(m\)</span> by <span class="math inline">\(\Delta\)</span>, <span class="math inline">\(\Delta * m = 31,400\)</span></li>
 <li>Multiply <span class="math inline">\(n\)</span> by <span class="math inline">\(\Delta\)</span>, <span class="math inline">\(\Delta * n = 27,200\)</span></li>
-<li>Add <span class="math inline">\(\Delta m + \Delta n = 58,600\)</span></li>
-<li>Divide result by <span class="math inline">\(\Delta\)</span>, <span class="math inline">\(58,600 / \Delta = 5.86\)</span></li>
+<li>Add <span class="math inline">\(\Delta m * \Delta n = 854,080,000\)</span></li>
+<li>Divide result by <span class="math inline">\(\Delta^2\)</span>, <span class="math inline">\(854,080,000 / \Delta^2 = 8.5408\)</span></li>
 </ol>
+<p>The canonical embedding <span class="math inline">\(\sigma\)</span> is defined as <span class="math inline">\(\sigma : \mathbb{R}[X]/(X^N +1) \rightarrow \mathbb{C}^N\)</span> which is equaluating the polynomial on the primitive complex roots of unity to get a vector of points Its inverse would be <span class="math inline">\(\sigma^{-1} : \mathbb{C}^N \rightarrow \mathbb{R}[X]/(X^N +1)\)</span> which takes a list of points and produces a polynomial.</p>
+<p>An element in <span class="math inline">\(\mathbb{H}\)</span> is not necessarily an element in <span class="math inline">\(\sigma(\mathcal{R})\)</span> so we have to project each element into <span class="math inline">\(\sigma(\mathcal{R})\)</span>.</p>
+<p>We want to project the elements of <span class="math inline">\(\mathbb{H}\)</span> onto the bases of <span class="math inline">\(\sigma(\mathcal{R})\)</span> which are <span class="math inline">\(\beta = (\sigma(1),\sigma(X),\dots,\sigma(X^{N−1}))\)</span> and to have integer coefficients rather than complex ones.</p>
+<p>A technique for this discretization is called “coordinate-wise randomized rounding” and is explained in section 2.4.2 of <a href="https://web.eecs.umich.edu/~cpeikert/pubs/toolkit.pdf">A Toolkit for Ring-LWE Cryptography</a>.</p>
+<p>The first step is to project the elements of our vector <span class="math inline">\(z\)</span> onto the bases of <span class="math inline">\(\sigma(\mathcal{R})\)</span>.</p>
+<p>This can be done by using the vector projection equation first learning in a college algebra course. It is defined as <span class="math inline">\(proj_\beta z = \frac{z * \beta}{\left\| \beta \right\|} * \beta\)</span>.</p>
+<p>After that we will have a polynomial that has the same bases of <span class="math inline">\(\sigma(\mathcal{R})\)</span>, but we still need to round it so that it has integer coefficients.</p>
+<div class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> coordinate_wise_randomized_rounding(coordinates):</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    r <span class="op">=</span> coordinates <span class="op">-</span> np.floor(coordinates)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    f <span class="op">=</span> np.array([np.random.choice([c, c<span class="op">-</span><span class="dv">1</span>], <span class="dv">1</span>) <span class="cf">for</span> c <span class="kw">in</span> r]).reshape(<span class="op">-</span><span class="dv">1</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    rounded_coordinates <span class="op">=</span> coordinates <span class="op">+</span> f</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    rounded_coordinates <span class="op">=</span> [<span class="bu">int</span>(coeff) <span class="cf">for</span> coeff <span class="kw">in</span> rounded_coordinates]</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> rounded_coordinates</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> discretization():</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">pass</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> numpy.polynomial <span class="im">import</span> Polynomial</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>DELTA <span class="op">=</span> <span class="dv">64</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">4</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> pi_inverse(z: np.ndarray) <span class="op">-&gt;</span> np.ndarray:</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.concatenate([z, [np.conjugate(x) <span class="cf">for</span> x <span class="kw">in</span> z[::<span class="op">-</span><span class="dv">1</span>]]])</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> cwrr(coords):</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    decimals <span class="op">=</span> coords <span class="op">-</span> np.floor(coords)</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    f <span class="op">=</span> np.array([np.random.choice([a<span class="op">-</span><span class="dv">1</span>, a], <span class="dv">1</span>) <span class="cf">for</span> a <span class="kw">in</span> decimals]).reshape(<span class="op">-</span><span class="dv">1</span>)</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.array([<span class="bu">int</span>(coord) <span class="cf">for</span> coord <span class="kw">in</span> coords <span class="op">+</span> f])</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> discretization(z: np.ndarray):</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>    bases <span class="op">=</span> np.vander(primitive_nth_roots_of_unity(<span class="dv">2</span><span class="op">*</span>N), N, increasing<span class="op">=</span><span class="va">True</span>).T</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>    proj <span class="op">=</span> np.array([np.real(np.vdot(z, b) <span class="op">/</span> np.vdot(b,b)) <span class="cf">for</span> b <span class="kw">in</span> bases])</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> bases.T <span class="op">@</span> cwrr(proj)</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> sigma_inverse(b: np.ndarray) <span class="op">-&gt;</span> Polynomial:</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>    A <span class="op">=</span> np.vander(primitive_nth_roots_of_unity(<span class="dv">2</span><span class="op">*</span>N), N, increasing<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>    coeffs <span class="op">=</span> np.linalg.solve(A, b)</span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> Polynomial(coeffs)</span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> encode(z: np.ndarray) <span class="op">-&gt;</span> Polynomial:</span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>    out <span class="op">=</span> pi_inverse(z)</span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>    out <span class="op">*=</span> DELTA</span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>    out <span class="op">=</span> discretization(out)</span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a>    out <span class="op">=</span> sigma_inverse(out)</span>
+<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a>    out <span class="op">=</span> np.<span class="bu">round</span>(np.real(out.coef)).astype(<span class="bu">int</span>)</span>
+<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> Polynomial(out)</span>
+<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-40"><a href="#cb8-40" aria-hidden="true" tabindex="-1"></a>z <span class="op">=</span> np.array([<span class="dv">3</span><span class="op">+</span><span class="ot">4j</span>, <span class="dv">2</span><span class="op">-</span><span class="ot">1j</span>])</span>
+<span id="cb8-41"><a href="#cb8-41" aria-hidden="true" tabindex="-1"></a>encoded_z <span class="op">=</span> encode(z)</span>
+<span id="cb8-42"><a href="#cb8-42" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(encoded_z)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>159.0 + 91.0·x + 159.0·x² + 44.0·x³</code></pre>
+</div>
+</div>
 </section>
 <section id="decoding" class="level2">
 <h2 class="anchored" data-anchor-id="decoding">Decoding</h2>
@@ -338,8 +404,8 @@ i: 1, (2-1j) = i: 2, (2+1j)
 <section id="next-steps" class="level2">
 <h2 class="anchored" data-anchor-id="next-steps">Next Steps</h2>
 </section>
-<section id="resources" class="level2">
-<h2 class="anchored" data-anchor-id="resources">Resources</h2>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
 
 
 </section>

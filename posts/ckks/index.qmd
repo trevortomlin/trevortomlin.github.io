@@ -150,9 +150,65 @@ It is defined as $proj_\beta z = \frac{z * \beta}{\left\| \beta \right\|} * \bet
 
 After that we will have a polynomial that has the same bases of $\sigma(\mathcal{R})$, but we still need to round it so that it has integer coefficients.
 
+```{python}
+def coordinate_wise_randomized_rounding(coordinates):
+    r = coordinates - np.floor(coordinates)
+    f = np.array([np.random.choice([c, c-1], 1) for c in r]).reshape(-1)
+    rounded_coordinates = coordinates + f
+    rounded_coordinates = [int(coeff) for coeff in rounded_coordinates]
+    return rounded_coordinates
+```
+
+```{python}
+def discretization():
+    pass
+    
+```
+
+```{python}
+from numpy.polynomial import Polynomial
 
 
+DELTA = 64
+N = 4
 
+
+def pi_inverse(z: np.ndarray) -> np.ndarray:
+    return np.concatenate([z, [np.conjugate(x) for x in z[::-1]]])
+
+
+def cwrr(coords):
+    decimals = coords - np.floor(coords)
+    f = np.array([np.random.choice([a-1, a], 1) for a in decimals]).reshape(-1)
+    return np.array([int(coord) for coord in coords + f])
+
+
+def discretization(z: np.ndarray):
+    bases = np.vander(primitive_nth_roots_of_unity(2*N), N, increasing=True).T
+    proj = np.array([np.real(np.vdot(z, b) / np.vdot(b,b)) for b in bases])
+    return bases.T @ cwrr(proj)
+
+
+def sigma_inverse(b: np.ndarray) -> Polynomial:
+    A = np.vander(primitive_nth_roots_of_unity(2*N), N, increasing=True)
+    coeffs = np.linalg.solve(A, b)
+    return Polynomial(coeffs)
+
+
+def encode(z: np.ndarray) -> Polynomial:
+    out = pi_inverse(z)
+    out *= DELTA
+    out = discretization(out)
+    out = sigma_inverse(out)
+    
+    out = np.round(np.real(out.coef)).astype(int)
+    return Polynomial(out)
+
+
+z = np.array([3+4j, 2-1j])
+encoded_z = encode(z)
+print(encoded_z)
+```
 
 ## Decoding
 
