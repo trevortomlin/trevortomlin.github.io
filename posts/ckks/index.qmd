@@ -141,14 +141,22 @@ An element in $\mathbb{H}$ is not necessarily an element in $\sigma(\mathcal{R})
 
 We want to project the elements of $\mathbb{H}$ onto the bases of $\sigma(\mathcal{R})$ which are $\beta = (\sigma(1),\sigma(X),\dots,\sigma(X^{N−1}))$ and to have integer coefficients rather than complex ones.
 
-A technique for this discretization is called "coordinate-wise randomized rounding" and is explained in section 2.4.2 of [A Toolkit for Ring-LWE Cryptography](https://web.eecs.umich.edu/~cpeikert/pubs/toolkit.pdf).
-
 The first step is to project the elements of our vector $z$ onto the bases of $\sigma(\mathcal{R})$.
 
 This can be done by using the vector projection equation first learning in a college algebra course.
 It is defined as $proj_\beta z = \frac{z * \beta}{\left\| \beta \right\|} * \beta$.
 
 After that we will have a polynomial that has the same bases of $\sigma(\mathcal{R})$, but we still need to round it so that it has integer coefficients.
+
+A technique for this discretization is called "coordinate-wise randomized rounding" and is explained in section 2.4.2 of [A Toolkit for Ring-LWE Cryptography](https://web.eecs.umich.edu/~cpeikert/pubs/toolkit.pdf).
+
+Let $\Lambda = \mathcal{L}(B) \subset \mathbb{R}$ represented by the basis $B$ Given a point $x \in \mathbb{R}$ and a coset $c \in \mathbb{R}$, the goal is to find an element, $y$ on the lattice $\Lambda$ that minimizes the length of $y-x$.
+
+We define a new coset, $c' = \Sigma^{n}_i=1=a_ib_i \mod \lambda$ for the coefficients a which are the decimal parts of our x point between 0 and 1.
+We choose $f_i$ randomly from $\{a-1, a\}$. We then multiply by the basis to complete the prijection.
+
+In other words, we first compute $randround(\frac{\langle z_i b_i \rangle}{\langle b_i b_i\rangle})$ for every basis vector and then
+we multiply it by $b$ like the previous projection formula told us.
 
 ```{python}
 def rand_round(x: float) -> int:
@@ -158,33 +166,35 @@ def rand_round(x: float) -> int:
 
 
 def cwrr(coords: np.ndarray) -> np.ndarray:
-    out = []
-
-    for coord in coords:
-        real = coord.real
-        imag = coord.imag
-        
-        real_round = rand_round(real)
-        imag_round = rand_round(imag)
-
-        out.append(real_round + imag_round * 1j)
-
-    return np.array(out)
+    return np.array([rand_round(x) for x in coords])
 
 
-def discretization(z: np.ndarray):
+def discretization(z: np.ndarray) -> np.ndarray:
     bases = np.vander(primitive_nth_roots_of_unity(2*N), N, increasing=True).T
-    proj = np.array([np.vdot(z, b) / np.vdot(b,b) for b in bases])
+    proj = np.array([np.real(np.vdot(z, b) / np.vdot(b,b)) for b in bases])
 
-    return bases.T @ cwrr(proj)
+    return cwrr(proj) @ bases
 ```
 
+After that we have have to compute $\sigma^{-1}(\lfloor\Delta \pi^{-1}(m)\rceil_{\sigma(\mathcal{R})})$ to get 
+our final transformation into the ciphertext space $\mathbb{Z}_q[X]/(X^N +1)$
 
+We have a list of points so we can use the vandermonde matrix to solve for the coefficients by solving
+$Va = y$ where V is the vandermonde matrix, a are the polynomial coefficients, and y are the points that we have.
 
 ```{python}
 from numpy.polynomial import Polynomial
 
 
+def sigma_inverse(b: np.ndarray) -> Polynomial:
+    A = np.vander(primitive_nth_roots_of_unity(2*N), N, increasing=True)
+    coeffs = np.linalg.solve(A, b)
+    return Polynomial(coeffs)
+```
+
+Once we put it together we have our complete encoding functionality.
+
+```{python}
 DELTA = 64
 N = 4
 
@@ -203,7 +213,7 @@ def cwrr(coords: np.ndarray) -> np.ndarray:
     return np.array([rand_round(x) for x in coords])
 
 
-def discretization(z: np.ndarray):
+def discretization(z: np.ndarray) -> np.ndarray:
     bases = np.vander(primitive_nth_roots_of_unity(2*N), N, increasing=True).T
     proj = np.array([np.real(np.vdot(z, b) / np.vdot(b,b)) for b in bases])
 
@@ -231,7 +241,59 @@ encoded_z = encode(z)
 print(encoded_z)
 ```
 
+If compare with the paper's example we can see that we got the same polynomial that they did and our scheme worked.
+
+To recap how our encoding scheme encodes $m \in \mathbb{C}^{N/2} \rightarrow \mathbb{Z}_q[X]/(X^N +1)$:
+
+1. $\pi^{-1}(m)$ applies $\mathbb{C}^{N/2} \rightarrow \mathbb{H}$
+2. Scale our element: $\Delta \pi^{-1}(m)$
+3. Project and randomly round our element into the space of $\sigma(\mathcal{R})$
+4. Apply $\sigma^{-1}(\lfloor\Delta \pi^{-1}(m)\rceil_{\sigma(\mathcal{R})}) \in \mathbb{Z}_q[X]/(X^N +1)$
+
 ## Decoding
+
+Decoding is very easy to understand as it is pretty much the opposite of encoding.
+
+Our goal is to convert the polynomial in the ring $\mathbb{Z}_q[X]/(X^N +1)$ to our plaintext in the space $\mathbb{C}^{N/2}$.
+
+First we have to multiply our polynomial by $\Delta^{-1}$.
+
+Then we use the canonical embedding map $\sigma: \mathbb{R}[X]/(X^N +1) \rightarrow \mathbb{C}^{N/2}$ which is equivalent to
+evaluating the polynomial, p, at all of our primitive roots of unity and can be calculated with the vandermonde matrix.
+
+```{python}
+def sigma(p: Polynomial) -> np.ndarray:
+    V = np.vander(primitive_nth_roots_of_unity(2*N), N, increasing=True)
+    a = p.coef
+    y = V @ a
+    return y
+```
+
+Next we have to perform $\pi$ to take an element $\in \mathbb{H}$ and transform it into and element $\in \mathbb{C}^{N/2}$
+
+```{python}
+def pi(z: np.ndarray) -> np.ndarray:
+    return z[:N//2]
+```
+
+Now we put it all together to get our decoding function.
+
+```{python}
+def decode(p: Polynomial) -> np.ndarray:
+    p *= 1/DELTA
+    y = sigma(p)
+    return pi(y)
+
+print(decode(encoded_z))
+```
+
+We can see that the decoded value is very close to our orignal value.
+
+To summarize the decoding, we follow these steps:
+
+1. Multiply our polynomial by $\Delta^{-1}$
+2. Use the canoncial embedding map on our polynomial: $\sigma: \mathbb{R}[X]/(X^N +1) \rightarrow \mathbb{C}^{N/2}$
+3. Transform our element from $\mathbb{H} \rightarrow \mathbb{C}^{N/2}$ using $\pi$
 
 ## Encryption
 
