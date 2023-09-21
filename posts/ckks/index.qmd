@@ -179,6 +179,8 @@ def discretization(z: np.ndarray):
     return bases.T @ cwrr(proj)
 ```
 
+
+
 ```{python}
 from numpy.polynomial import Polynomial
 
@@ -198,25 +200,14 @@ def rand_round(x: float) -> int:
 
 
 def cwrr(coords: np.ndarray) -> np.ndarray:
-    out = []
-
-    for coord in coords:
-        real = coord.real
-        imag = coord.imag
-        
-        real_round = rand_round(real)
-        imag_round = rand_round(imag)
-
-        out.append(real_round + imag_round * 1j)
-
-    return np.array(out)
+    return np.array([rand_round(x) for x in coords])
 
 
 def discretization(z: np.ndarray):
     bases = np.vander(primitive_nth_roots_of_unity(2*N), N, increasing=True).T
-    proj = np.array([np.vdot(z, b) / np.vdot(b,b) for b in bases])
+    proj = np.array([np.real(np.vdot(z, b) / np.vdot(b,b)) for b in bases])
 
-    return bases.T @ cwrr(proj)
+    return cwrr(proj) @ bases
 
 
 def sigma_inverse(b: np.ndarray) -> Polynomial:
