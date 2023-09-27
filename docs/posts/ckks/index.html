@@ -398,7 +398,7 @@ i: 1, (2-1j) = i: 2, (2+1j)
 <span id="cb8-43"><a href="#cb8-43" aria-hidden="true" tabindex="-1"></a>encoded_z <span class="op">=</span> encode(z)</span>
 <span id="cb8-44"><a href="#cb8-44" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(encoded_z)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>160.0 + 91.0·x + 159.0·x² + 44.0·x³</code></pre>
+<pre><code>159.0 + 90.0·x + 159.0·x² + 44.0·x³</code></pre>
 </div>
 </div>
 <p>If compare with the paper’s example we can see that we got the same polynomial that they did and our scheme worked.</p>
@@ -437,9 +437,30 @@ i: 1, (2-1j) = i: 2, (2+1j)
 <span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(decode(encoded_z))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[3.01928154+3.97592837j 1.98071846-0.99282163j]</code></pre>
+<pre><code>[2.992608+3.96487982j 1.976142-1.00387018j]</code></pre>
 </div>
 </div>
+<p>We can see that the decoded value is very close to our orignal value.</p>
+<p>To summarize the decoding, we follow these steps:</p>
+<ol type="1">
+<li>Multiply our polynomial by <span class="math inline">\(\Delta^{-1}\)</span></li>
+<li>Use the canoncial embedding map on our polynomial: <span class="math inline">\(\sigma: \mathbb{R}[X]/(X^N +1) \rightarrow \mathbb{C}^{N/2}\)</span></li>
+<li>Transform our element from <span class="math inline">\(\mathbb{H} \rightarrow \mathbb{C}^{N/2}\)</span> using <span class="math inline">\(\pi\)</span></li>
+</ol>
+</section>
+<section id="key-generation" class="level2">
+<h2 class="anchored" data-anchor-id="key-generation">Key Generation</h2>
+<p>The key generation phase creates a private key and uses that to create a public key and an evaluation key.</p>
+<p>We sample <span class="math inline">\(s\)</span> from a function that returns a polynomial with coefficients that are 0 or 1 and have a specified hamming weight denoted <span class="math inline">\(s \leftarrow HWT(h)\)</span> .</p>
+<p>The secret key, <span class="math inline">\(sk\)</span>, is defined as (1, s).</p>
+<p>We uniformly sample coefficients for <span class="math inline">\(R_{qL}\)</span> in the range <span class="math inline">\(\lbrack qL/2, qL/2-1\}\)</span>.</p>
+<p>Then we sample a error polynomial from a discrete gaussian function denoted <span class="math inline">\(e \leftarrow DG(\sigma^2)\)</span>.</p>
+<p>For the final part of our public key, we set <span class="math inline">\(b \leftarrow -as + e \space (mod \space qL)\)</span>.</p>
+<p>Our public key, <span class="math inline">\(pk\)</span>, is set to (b, a).</p>
+<p>This is enough to do simple additions, but for a technique we will go into depth more later we need an evaluation key.</p>
+<p>Like before we sample an <span class="math inline">\(a'\)</span> and <span class="math inline">\(e'\)</span> polynomial with the same techniques.</p>
+<p>This time, however, we set <span class="math inline">\(b \leftarrow -a's + e' + Ps^2 \space (mod \space P * qL)\)</span>.</p>
+<p>And our evaluation key, <span class="math inline">\(evk\)</span>, is (b’, a’).</p>
 </section>
 <section id="encryption" class="level2">
 <h2 class="anchored" data-anchor-id="encryption">Encryption</h2>

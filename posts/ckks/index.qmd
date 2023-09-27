@@ -295,6 +295,29 @@ To summarize the decoding, we follow these steps:
 2. Use the canoncial embedding map on our polynomial: $\sigma: \mathbb{R}[X]/(X^N +1) \rightarrow \mathbb{C}^{N/2}$
 3. Transform our element from $\mathbb{H} \rightarrow \mathbb{C}^{N/2}$ using $\pi$
 
+## Key Generation
+The key generation phase creates a private key and uses that to create a public key and an evaluation key.
+
+We sample $s$ from a function that returns a polynomial with coefficients that are 0 or 1 and have a specified hamming weight denoted $s \leftarrow HWT(h)$ .
+
+The secret key, $sk$, is defined as (1, s).
+
+We uniformly sample coefficients for $R_{qL}$ in the range $\lbrack qL/2, qL/2-1\}$.
+
+Then we sample a error polynomial from a discrete gaussian function denoted $e \leftarrow DG(\sigma^2)$.
+
+For the final part of our public key, we set $b \leftarrow -as + e \space (mod \space qL)$.
+
+Our public key, $pk$, is set to (b, a).
+
+This is enough to do simple additions, but for a technique we will go into depth more later we need an evaluation key.
+
+Like before we sample an $a'$ and $e'$ polynomial with the same techniques. 
+
+This time, however, we set $b' \leftarrow -a's + e' + Ps^2 \space (mod \space P qL)$.
+
+And our evaluation key, $evk$, is (b', a').
+
 ## Encryption
 
 ## Decryption
