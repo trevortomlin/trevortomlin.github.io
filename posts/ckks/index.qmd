@@ -304,7 +304,22 @@ The secret key, $sk$, is defined as (1, s).
 
 We uniformly sample coefficients for $R_{qL}$ in the range $\lbrack qL/2, qL/2-1\}$.
 
+The code for this function is shown below:
+
+```{python}
+def gen_uniform_poly(n: int, modulus: int) -> Polynomial:
+    coeffs = [random.randrange(-modulus//2, modulus//2 + 1) for _ in range(n)]
+    return Polynomial(coeffs)
+```
+
 Then we sample a error polynomial from a discrete gaussian function denoted $e \leftarrow DG(\sigma^2)$.
+
+An implementation of the discrete gaussian follows:
+
+```{python}
+def gen_gaussian_poly(n: int, modulus: int, sigma: float = 3.2) -> Polynomial:
+    return Polynomial(np.rint(np.random.normal(0, sigma**2, size=n)))
+```
 
 For the final part of our public key, we set $b \leftarrow -as + e \space (mod \space qL)$.
 
@@ -318,13 +333,86 @@ This time, however, we set $b' \leftarrow -a's + e' + Ps^2 \space (mod \space P 
 
 And our evaluation key, $evk$, is (b', a').
 
+An example function in Python might look like:
+
+```{python}
+
+N = 4
+P = 2**15
+Q = 2**15
+L = 3
+h = 64
+poly_mod = Polynomial([1, 0, 0, 0, 1])
+
+def keygen():
+    Ql = P ** L * Q
+
+    s = gen_hwt_poly(N, h)
+    a = gen_uniform_poly(N, Ql)
+    e = gen_gaussian_poly(N, Ql)
+
+    sk = (1, s)
+
+    b = poly_coef_mod((-a * s + e) % poly_mod, Ql)
+    pk = (b, a)
+                      
+    # evk
+    a1 = gen_uniform_poly(N, P * Ql)
+    e1 = gen_gaussian_poly(N, P * Ql)
+
+    b1 = poly_coef_mod((-a1 * s + e1 + P * (s ** 2)) % poly_mod, P * Ql)
+    evk = (b1, a1)
+
+    return pk, sk, evk
+```
+
 ## Encryption
 
+```{python}
+def encrypt(pk: tuple, m: Polynomial) -> tuple:
+    Ql = P ** L * Q
+
+    v = sample_triangle(N)
+    e1 = gen_gaussian_poly(N, Ql)
+    e2 = gen_gaussian_poly(N, Ql)
+
+    pk1, pk2 = pk
+
+    c1 = poly_coef_mod((v * pk1 + m + e1) % poly_mod, Ql)
+    c2 = poly_coef_mod((v * pk2 + e2) % poly_mod, Ql)
+
+    return ((c1, c2), L)
+```
+
 ## Decryption
+```{python}
+def decrypt(sk: tuple, ctx: tuple):
+    b, a = ctx[0]
+    l = ctx[1]
+    Ql = (P**l) * Q
+    return poly_coef_mod((b + a * sk[1]) % poly_mod, Ql)
+```
 
 ## Addition of Constants
+```{python}
+def add_const(c: tuple, const: Polynomial) -> tuple:
+    Ql = P ** c[1] * Q
+    c1, c2 = c[0]
+    cadd1 = poly_coef_mod((c1 + const) % poly_mod, Ql)
+    return ((cadd1, c2), c.l)
+```
 
 ## Addition of Ciphertexts
+```{python}
+def add(c1: tuple, c2: tuple) -> tuple:
+    assert c1[1] == c2[1], "Levels do not match. Not currently supported."
+    Ql = P ** c1[1] * Q
+    c11, c12 = c1[0]
+    c21, c22 = c2[0]
+    cadd1 = poly_coef_mod((c11 + c21) % poly_mod, Ql)
+    cadd2 = poly_coef_mod((c12 + c22) % poly_mod, Ql)
+    return ((cadd1, cadd2), c1.l)
+```
 
 ## Multiplication of Constants
 
