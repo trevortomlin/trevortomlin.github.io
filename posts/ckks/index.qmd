@@ -295,6 +295,8 @@ To summarize the decoding, we follow these steps:
 2. Use the canoncial embedding map on our polynomial: $\sigma: \mathbb{R}[X]/(X^N +1) \rightarrow \mathbb{C}^{N/2}$
 3. Transform our element from $\mathbb{H} \rightarrow \mathbb{C}^{N/2}$ using $\pi$
 
+## RLWE
+
 ## Key Generation
 The key generation phase creates a private key and uses that to create a public key and an evaluation key.
 
@@ -367,6 +369,29 @@ def keygen():
 ```
 
 ## Encryption
+The encryption step takes an encoded message in the form of a polynomial and hides it using the public key.
+
+Encryption uses another sampling method called $\mathcal{Z}O(\rho)$ that outputs either -1, 0, or 1. The probability of outputting -1 or 1 is rho/2 and the probability of outputting 0 is $1 - \rho$. 
+
+Here is an implementation we can use:
+
+```{python}
+def sample_triangle(n: int) -> Polynomial:
+    coeffs = [0] * n
+
+    for i in range(n):
+        r = random.randrange(0, 4)
+        if r == 0: coeffs[i] = -1
+        elif r == 1: coeffs[i] = 1
+        else: coeffs[i] = 0
+    return Polynomial(coeffs)
+```
+
+The steps for encryption are: 
+
+1. Sample $v \leftarrow \mathcal{Z}O(0.5)$
+2. Sample $e1, e2 \leftarrow DG(\sigma^2)$
+3. Output $v · pk + (m + e_0, e_1) \space (mod \space qL)$
 
 ```{python}
 def encrypt(pk: tuple, m: Polynomial) -> tuple:
@@ -389,7 +414,7 @@ def encrypt(pk: tuple, m: Polynomial) -> tuple:
 def decrypt(sk: tuple, ctx: tuple):
     b, a = ctx[0]
     l = ctx[1]
-    Ql = (P**l) * Q
+    Ql = (P ** l) * Q
     return poly_coef_mod((b + a * sk[1]) % poly_mod, Ql)
 ```
 
