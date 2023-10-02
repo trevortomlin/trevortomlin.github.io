@@ -398,7 +398,7 @@ i: 1, (2-1j) = i: 2, (2+1j)
 <span id="cb8-43"><a href="#cb8-43" aria-hidden="true" tabindex="-1"></a>encoded_z <span class="op">=</span> encode(z)</span>
 <span id="cb8-44"><a href="#cb8-44" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(encoded_z)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>159.0 + 90.0·x + 159.0·x² + 44.0·x³</code></pre>
+<pre><code>159.0 + 90.0·x + 159.0·x² + 45.0·x³</code></pre>
 </div>
 </div>
 <p>If compare with the paper’s example we can see that we got the same polynomial that they did and our scheme worked.</p>
@@ -437,7 +437,7 @@ i: 1, (2-1j) = i: 2, (2+1j)
 <span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(decode(encoded_z))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[2.992608+3.96487982j 1.976142-1.00387018j]</code></pre>
+<pre><code>[2.98155946+3.97592837j 1.98719054-0.99282163j]</code></pre>
 </div>
 </div>
 <p>We can see that the decoded value is very close to our orignal value.</p>
@@ -448,37 +448,152 @@ i: 1, (2-1j) = i: 2, (2+1j)
 <li>Transform our element from <span class="math inline">\(\mathbb{H} \rightarrow \mathbb{C}^{N/2}\)</span> using <span class="math inline">\(\pi\)</span></li>
 </ol>
 </section>
+<section id="rlwe" class="level2">
+<h2 class="anchored" data-anchor-id="rlwe">RLWE</h2>
+<p>The ring learning with errors (RLWE) problem is closely related to the learning with errors (LWE) problem and has be proven to have the same security. RLWE works with polynomials in a finite quotient ring often denoted $<em>{q}[&nbsp;x] / (x)$ where <span class="math inline">\(\Phi(x)\)</span> is an irreducible polynomial. There are three polynomials that are used in the scheme. There is a random, but known polynomial sampled from the ring called <span class="math inline">\(a(x)\)</span>, a random unknown error polynomial, <span class="math inline">\(e(x)\)</span>, and an unknown secret polynomial, <span class="math inline">\(s(x)\)</span>. $b(x) is formed from the equation <span class="math inline">\(b(x) = a(x) * s(x) + e(x)\)</span> and is publicly known. The RWLE problem has two different sub-problems. The first problem is called the search version and the goal is to determine the secret polynomial, <span class="math inline">\(s(x)\)</span> from the public pair (a(x), b(x)). The second problem is called the decision problem and the goal is to determine whether a polynomial <span class="math inline">\(b(x)\)</span> is from the equation <span class="math inline">\(b(x) = a(x) * s(x) + e(x)\)</span> or if it is randomly sampled from the quotient ring, $</em>{q}[&nbsp;x] / (x)$. These problems have been proven to be incredibly hard to solve even for quantum computers which makes them an excellent choice for cryptography.</p>
+</section>
 <section id="key-generation" class="level2">
 <h2 class="anchored" data-anchor-id="key-generation">Key Generation</h2>
 <p>The key generation phase creates a private key and uses that to create a public key and an evaluation key.</p>
 <p>We sample <span class="math inline">\(s\)</span> from a function that returns a polynomial with coefficients that are 0 or 1 and have a specified hamming weight denoted <span class="math inline">\(s \leftarrow HWT(h)\)</span> .</p>
 <p>The secret key, <span class="math inline">\(sk\)</span>, is defined as (1, s).</p>
 <p>We uniformly sample coefficients for <span class="math inline">\(R_{qL}\)</span> in the range <span class="math inline">\(\lbrack qL/2, qL/2-1\}\)</span>.</p>
+<p>The code for this function is shown below:</p>
+<div class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> gen_uniform_poly(n: <span class="bu">int</span>, modulus: <span class="bu">int</span>) <span class="op">-&gt;</span> Polynomial:</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    coeffs <span class="op">=</span> [random.randrange(<span class="op">-</span>modulus<span class="op">//</span><span class="dv">2</span>, modulus<span class="op">//</span><span class="dv">2</span> <span class="op">+</span> <span class="dv">1</span>) <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(n)]</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> Polynomial(coeffs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <p>Then we sample a error polynomial from a discrete gaussian function denoted <span class="math inline">\(e \leftarrow DG(\sigma^2)\)</span>.</p>
+<p>An implementation of the discrete gaussian follows:</p>
+<div class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> gen_gaussian_poly(n: <span class="bu">int</span>, modulus: <span class="bu">int</span>, sigma: <span class="bu">float</span> <span class="op">=</span> <span class="fl">3.2</span>) <span class="op">-&gt;</span> Polynomial:</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> Polynomial(np.rint(np.random.normal(<span class="dv">0</span>, sigma<span class="op">**</span><span class="dv">2</span>, size<span class="op">=</span>n)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <p>For the final part of our public key, we set <span class="math inline">\(b \leftarrow -as + e \space (mod \space qL)\)</span>.</p>
 <p>Our public key, <span class="math inline">\(pk\)</span>, is set to (b, a).</p>
 <p>This is enough to do simple additions, but for a technique we will go into depth more later we need an evaluation key.</p>
 <p>Like before we sample an <span class="math inline">\(a'\)</span> and <span class="math inline">\(e'\)</span> polynomial with the same techniques.</p>
-<p>This time, however, we set <span class="math inline">\(b \leftarrow -a's + e' + Ps^2 \space (mod \space P * qL)\)</span>.</p>
+<p>This time, however, we set <span class="math inline">\(b' \leftarrow -a's + e' + Ps^2 \space (mod \space P qL)\)</span>.</p>
 <p>And our evaluation key, <span class="math inline">\(evk\)</span>, is (b’, a’).</p>
+<p>An example function in Python might look like:</p>
+<div class="cell" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">4</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>P <span class="op">=</span> <span class="dv">2</span><span class="op">**</span><span class="dv">15</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>Q <span class="op">=</span> <span class="dv">2</span><span class="op">**</span><span class="dv">15</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>L <span class="op">=</span> <span class="dv">3</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>h <span class="op">=</span> <span class="dv">64</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>poly_mod <span class="op">=</span> Polynomial([<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>])</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> keygen():</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>    Ql <span class="op">=</span> P <span class="op">**</span> L <span class="op">*</span> Q</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>    s <span class="op">=</span> gen_hwt_poly(N, h)</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>    a <span class="op">=</span> gen_uniform_poly(N, Ql)</span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>    e <span class="op">=</span> gen_gaussian_poly(N, Ql)</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>    sk <span class="op">=</span> (<span class="dv">1</span>, s)</span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>    b <span class="op">=</span> poly_coef_mod((<span class="op">-</span>a <span class="op">*</span> s <span class="op">+</span> e) <span class="op">%</span> poly_mod, Ql)</span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>    pk <span class="op">=</span> (b, a)</span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>                      </span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>    <span class="co"># evk</span></span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>    a1 <span class="op">=</span> gen_uniform_poly(N, P <span class="op">*</span> Ql)</span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>    e1 <span class="op">=</span> gen_gaussian_poly(N, P <span class="op">*</span> Ql)</span>
+<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a>    b1 <span class="op">=</span> poly_coef_mod((<span class="op">-</span>a1 <span class="op">*</span> s <span class="op">+</span> e1 <span class="op">+</span> P <span class="op">*</span> (s <span class="op">**</span> <span class="dv">2</span>)) <span class="op">%</span> poly_mod, P <span class="op">*</span> Ql)</span>
+<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a>    evk <span class="op">=</span> (b1, a1)</span>
+<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-27"><a href="#cb16-27" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> pk, sk, evk</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section>
 <section id="encryption" class="level2">
 <h2 class="anchored" data-anchor-id="encryption">Encryption</h2>
+<p>The encryption step takes an encoded message in the form of a polynomial and hides it using the public key.</p>
+<p>Encryption uses another sampling method called <span class="math inline">\(\mathcal{Z}O(\rho)\)</span> that outputs either -1, 0, or 1. The probability of outputting -1 or 1 is rho/2 and the probability of outputting 0 is <span class="math inline">\(1 - \rho\)</span>.</p>
+<p>Here is an implementation we can use:</p>
+<div class="cell" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> sample_triangle(n: <span class="bu">int</span>) <span class="op">-&gt;</span> Polynomial:</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    coeffs <span class="op">=</span> [<span class="dv">0</span>] <span class="op">*</span> n</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n):</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>        r <span class="op">=</span> random.randrange(<span class="dv">0</span>, <span class="dv">4</span>)</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> r <span class="op">==</span> <span class="dv">0</span>: coeffs[i] <span class="op">=</span> <span class="op">-</span><span class="dv">1</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>        <span class="cf">elif</span> r <span class="op">==</span> <span class="dv">1</span>: coeffs[i] <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>: coeffs[i] <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> Polynomial(coeffs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The steps for encryption are:</p>
+<ol type="1">
+<li>Sample <span class="math inline">\(v \leftarrow \mathcal{Z}O(0.5)\)</span></li>
+<li>Sample <span class="math inline">\(e1, e2 \leftarrow DG(\sigma^2)\)</span></li>
+<li>Output <span class="math inline">\(v · pk + (m + e_0, e_1) \space (mod \space qL)\)</span></li>
+</ol>
+<div class="cell" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> encrypt(pk: <span class="bu">tuple</span>, m: Polynomial) <span class="op">-&gt;</span> <span class="bu">tuple</span>:</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    Ql <span class="op">=</span> P <span class="op">**</span> L <span class="op">*</span> Q</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    v <span class="op">=</span> sample_triangle(N)</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    e1 <span class="op">=</span> gen_gaussian_poly(N, Ql)</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    e2 <span class="op">=</span> gen_gaussian_poly(N, Ql)</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>    pk1, pk2 <span class="op">=</span> pk</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>    c1 <span class="op">=</span> poly_coef_mod((v <span class="op">*</span> pk1 <span class="op">+</span> m <span class="op">+</span> e1) <span class="op">%</span> poly_mod, Ql)</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>    c2 <span class="op">=</span> poly_coef_mod((v <span class="op">*</span> pk2 <span class="op">+</span> e2) <span class="op">%</span> poly_mod, Ql)</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> ((c1, c2), L)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section>
 <section id="decryption" class="level2">
 <h2 class="anchored" data-anchor-id="decryption">Decryption</h2>
+<div class="cell" data-execution_count="15">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> decrypt(sk: <span class="bu">tuple</span>, ctx: <span class="bu">tuple</span>):</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    b, a <span class="op">=</span> ctx[<span class="dv">0</span>]</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    l <span class="op">=</span> ctx[<span class="dv">1</span>]</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    Ql <span class="op">=</span> (P <span class="op">**</span> l) <span class="op">*</span> Q</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> poly_coef_mod((b <span class="op">+</span> a <span class="op">*</span> sk[<span class="dv">1</span>]) <span class="op">%</span> poly_mod, Ql)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section>
 <section id="addition-of-constants" class="level2">
 <h2 class="anchored" data-anchor-id="addition-of-constants">Addition of Constants</h2>
+<p>Addition of constants in this scheme is very simple. We just add the encoded (but not encrypted) constant to the first element of the ciphertext. The following code demonstrates this addition.</p>
+<div class="cell" data-execution_count="16">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> add_const(c: <span class="bu">tuple</span>, const: Polynomial) <span class="op">-&gt;</span> <span class="bu">tuple</span>:</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    Ql <span class="op">=</span> P <span class="op">**</span> c[<span class="dv">1</span>] <span class="op">*</span> Q</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    c1, c2 <span class="op">=</span> c[<span class="dv">0</span>]</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>    cadd1 <span class="op">=</span> poly_coef_mod((c1 <span class="op">+</span> const) <span class="op">%</span> poly_mod, Ql)</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> ((cadd1, c2), c.l)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section>
 <section id="addition-of-ciphertexts" class="level2">
 <h2 class="anchored" data-anchor-id="addition-of-ciphertexts">Addition of Ciphertexts</h2>
+<p>Addition of ciphertexts in CKKS is also very simple. We just output the component-wise sum of the ciphertexts. Addition in most homomorphic encryption schemes does not add much noise and we usually do not have to do any noise reduction. However, if a very large number of additions are performed, a noise reduction technique will have to be employed.</p>
+<div class="cell" data-execution_count="17">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> add(c1: <span class="bu">tuple</span>, c2: <span class="bu">tuple</span>) <span class="op">-&gt;</span> <span class="bu">tuple</span>:</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>    Ql <span class="op">=</span> P <span class="op">**</span> c1[<span class="dv">1</span>] <span class="op">*</span> Q</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    c11, c12 <span class="op">=</span> c1[<span class="dv">0</span>]</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    c21, c22 <span class="op">=</span> c2[<span class="dv">0</span>]</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    cadd1 <span class="op">=</span> poly_coef_mod((c11 <span class="op">+</span> c21) <span class="op">%</span> poly_mod, Ql)</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>    cadd2 <span class="op">=</span> poly_coef_mod((c12 <span class="op">+</span> c22) <span class="op">%</span> poly_mod, Ql)</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> ((cadd1, cadd2), c1.l)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section>
 <section id="multiplication-of-constants" class="level2">
 <h2 class="anchored" data-anchor-id="multiplication-of-constants">Multiplication of Constants</h2>
+<p>Multiplying a ciphertext by a plaintext is another simple operation as we only have to multiply each component of the ciphertext by the encoded constant.</p>
+<div class="cell" data-execution_count="18">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> mult_const(c: <span class="bu">tuple</span>, const: Polynomial) <span class="op">-&gt;</span> <span class="bu">tuple</span>:</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>    Ql <span class="op">=</span> P <span class="op">**</span> c.l <span class="op">*</span> Q</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    c1, c2 <span class="op">=</span> c.c</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>    cmult1 <span class="op">=</span> poly_coef_mod((c1 <span class="op">*</span> const) <span class="op">%</span> poly_mod, Ql)</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>    cmult2 <span class="op">=</span> poly_coef_mod((c2 <span class="op">*</span> const) <span class="op">%</span> poly_mod, Ql)</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> ((cmult1, cmult2), c.l)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section>
 <section id="multiplication-of-ciphertexts" class="level2">
 <h2 class="anchored" data-anchor-id="multiplication-of-ciphertexts">Multiplication of Ciphertexts</h2>
+<p>The most complex operation is multiplying two ciphertexts together. The noise of each ciphertext greatly increases the product’s noise and we have to have methods to deal with it so that it can be correctly decrypted.</p>
 </section>
 <section id="next-steps" class="level2">
 <h2 class="anchored" data-anchor-id="next-steps">Next Steps</h2>

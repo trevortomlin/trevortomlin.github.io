@@ -297,6 +297,9 @@ To summarize the decoding, we follow these steps:
 
 ## RLWE
 
+The ring learning with errors (RLWE) problem is closely related to the learning with errors (LWE) problem and has be proven to
+have the same security. RLWE works with polynomials in a finite quotient ring often denoted $\mathbb{Z}_{q}[\ x] / \Phi(x)\$ where $\Phi(x)$ is an irreducible polynomial. There are three polynomials that are used in the scheme. There is a random, but known polynomial sampled from the ring called $a(x)$, a random unknown error polynomial, $e(x)$, and an unknown secret polynomial, $s(x)$. $b(x) is formed from the equation $b(x) = a(x) * s(x) + e(x)$ and is publicly known. The RWLE problem has two different sub-problems. The first problem is called the search version and the goal is to determine the secret polynomial, $s(x)$ from the public pair (a(x), b(x)). The second problem is called the decision problem and the goal is to determine whether a polynomial $b(x)$ is from the equation $b(x) = a(x) * s(x) + e(x)$ or if it is randomly sampled from the quotient ring, $\mathbb{Z}_{q}[\ x] / \Phi(x)\$. These problems have been proven to be incredibly hard to solve even for quantum computers which makes them an excellent choice for cryptography. 
+
 ## Key Generation
 The key generation phase creates a private key and uses that to create a public key and an evaluation key.
 
@@ -419,6 +422,8 @@ def decrypt(sk: tuple, ctx: tuple):
 ```
 
 ## Addition of Constants
+Addition of constants in this scheme is very simple. We just add the encoded (but not encrypted) constant to the first element of the ciphertext.
+The following code demonstrates this addition.
 ```{python}
 def add_const(c: tuple, const: Polynomial) -> tuple:
     Ql = P ** c[1] * Q
@@ -428,9 +433,11 @@ def add_const(c: tuple, const: Polynomial) -> tuple:
 ```
 
 ## Addition of Ciphertexts
+Addition of ciphertexts in CKKS is also very simple. We just output the component-wise sum of the ciphertexts. Addition in most 
+homomorphic encryption schemes does not add much noise and we usually do not have to do any noise reduction. However, if a very large number of
+additions are performed, a noise reduction technique will have to be employed.
 ```{python}
 def add(c1: tuple, c2: tuple) -> tuple:
-    assert c1[1] == c2[1], "Levels do not match. Not currently supported."
     Ql = P ** c1[1] * Q
     c11, c12 = c1[0]
     c21, c22 = c2[0]
@@ -440,8 +447,22 @@ def add(c1: tuple, c2: tuple) -> tuple:
 ```
 
 ## Multiplication of Constants
+Multiplying a ciphertext by a plaintext is another simple operation as we only have to multiply each component of the ciphertext
+by the encoded constant.
+
+```{python}
+def mult_const(c: tuple, const: Polynomial) -> tuple:
+    Ql = P ** c.l * Q
+    c1, c2 = c.c
+    cmult1 = poly_coef_mod((c1 * const) % poly_mod, Ql)
+    cmult2 = poly_coef_mod((c2 * const) % poly_mod, Ql)
+    return ((cmult1, cmult2), c.l)
+```
 
 ## Multiplication of Ciphertexts
+The most complex operation is multiplying two ciphertexts together. The noise of each 
+ciphertext greatly increases the product's noise and we have to have methods to deal with it
+so that it can be correctly decrypted.
 
 ## Next Steps
 
