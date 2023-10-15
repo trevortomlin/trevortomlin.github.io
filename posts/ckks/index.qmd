@@ -1,8 +1,9 @@
 ---
 title: "Introduction to CKKS"
 author: "Trevor Tomlin"
-date: "2023-09-14"
+date: "2023-10-15"
 categories: [cryptography]
+draft: true
 ---
 
 # An introduction to the **HEAAN / CKKS** homomorphic encryption scheme
@@ -463,6 +464,37 @@ def mult_const(c: tuple, const: Polynomial) -> tuple:
 The most complex operation is multiplying two ciphertexts together. The noise of each 
 ciphertext greatly increases the product's noise and we have to have methods to deal with it
 so that it can be correctly decrypted.
+
+Multiplication is mathematically defined as
+Given $c_1 = (b_1, a_1), c_2 = (b_2, a_2)$
+Multiply $(b_1b_2, a_1b_2 + a_2b_1, a_1a_2) (mod \space q_l) = (d_1, d_2, d_3)$
+
+We notice that this increases our ciphertext space from 2 dimensions to 3 dimensions. This is a similar affect of multiplying two degree 1 polynomials and getting a degree polynomial eg. $(x+1)(x+3) = (x^2 + 4x + 3)$
+
+To decrypt we need to have a cipher text of two dimensions. To convert the new ciphertext into 2 dimensions we introduce an operation called **Relinearization**.
+
+If you remember from the key generation algorithm we created an evaluation key that involved masking the squared secret key.
+
+Because of this evaluation key we can define our relinearization algorithm as:
+$(d_0, d_1) = \lfloor P^{-1} * d_2 * evk \rceil (mod \space q_l)$
+
+There is still one more step needed to implement the multiplication algorithm.
+
+The **Rescaling** procedure is similar to the Modulus Switching technique used in other algorithms like BGV and has the purpose of eliminating some of the LSBs. It also keeps the scaling of the ciphertext consistent because when two ciphertexts with a scale factor of $\Delta$ multipy each other we get a scale factor of $\Delta^2$.
+
+Rescaling is defined as $\lfloor \frac{q_{l'}}{q_l}c \rceil$
+
+So for multiplication we:
+
+1. Multiply two ciphertexts to get a degree 3 ciphertext
+2. Relinearize the result back to 2 dimensions
+3. Rescaled the ciphertext so that the scale factor is correct
+
+An implementation is ommited because it multiplication in this scheme is unlikely
+to work unless you are a using a language that supports arbitrarily sized numbers.
+
+There is a paper that will be described below that shows how we can use this scheme
+with 64 bit numbers.
 
 ## Next Steps
 
