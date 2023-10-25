@@ -1,9 +1,8 @@
 ---
 title: "Introduction to CKKS"
 author: "Trevor Tomlin"
-date: "2023-10-15"
+date: "2023-10-25"
 categories: [cryptography]
-draft: true
 ---
 
 # An introduction to the **HEAAN / CKKS** homomorphic encryption scheme
@@ -21,7 +20,16 @@ Understanding the following notations will be helpful for reading this blog post
 
 ## Parameters
 
-$\Delta$ is the scaling factor
+* n is the dimension and is typically a power of 2, such as 2^11
+* $\Delta$ is the scaling factor
+* Q and P are two large numbers that both mush be somewhere in the range of 2^20 to 2^200
+* L represents the max number of multiplications allowed
+* $\sigma$ represents the standard deviation is typically set to 3.2
+* H is the hamming weight and is usually set to 64
+
+There are multiple lattice hardness estimators such as [Security Estimates for Lattice Problems](https://github.com/malb/lattice-estimator) that allow you to input parameters and see how many bits of security the parameters provide. Ideally the parameters provide at least 128 bits of security.
+
+[Homomorphic Encryption Standard](https://projects.csail.mit.edu/HEWorkshop/HomomorphicEncryptionStandard2018.pdf) provides standard parameters for FHE schemes and can be used as a reference.
 
 ## Encoding 
 This scheme operates allows us to encode a vector, $\mathbb{C}^{N/2}$, into the ciphertext space, $\mathcal{R}_q = (\mathbb{Z}/q\mathbb{Z})[X]/(X^N +1)$ 
@@ -497,5 +505,5 @@ There is a paper that will be described below that shows how we can use this sch
 with 64 bit numbers.
 
 ## Next Steps
-
-## References
+If you are implementing the scheme from the paper, you will likely run into issues. There are many optimizations that one can do to improve it. One easy one is to replace parts of the encoding with the Fast Fourier Transform (FFT) instead of the Vandermonde matrix to improve the time complexity. The more important optimization is related to the modulus P*Q. You need a very large amount of bits to represent these large numbers. A fix for this is to use the Chinese Remaineder Theorem (CRT) to represent the large numbers as smaller primes. The paper that implements this is called [A Full RNS Variant of
+Approximate Homomorphic Encryption](https://eprint.iacr.org/2018/931.pdf) and is recommended if you plan on implementing this scheme.
