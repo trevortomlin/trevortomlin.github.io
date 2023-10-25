@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Trevor Tomlin">
-<meta name="dcterms.date" content="2023-09-14">
+<meta name="dcterms.date" content="2023-10-25">
 
 <title>Trevor’s Website - Introduction to CKKS</title>
 <style>
@@ -164,7 +164,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">September 14, 2023</p>
+        <p class="date">October 25, 2023</p>
       </div>
     </div>
     
@@ -196,7 +196,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="parameters" class="level2">
 <h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
-<p><span class="math inline">\(\Delta\)</span> is the scaling factor</p>
+<ul>
+<li>n is the dimension and is typically a power of 2, such as 2^11</li>
+<li><span class="math inline">\(\Delta\)</span> is the scaling factor</li>
+<li>Q and P are two large numbers that both mush be somewhere in the range of 2^20 to 2^200</li>
+<li>L represents the max number of multiplications allowed</li>
+<li><span class="math inline">\(\sigma\)</span> represents the standard deviation is typically set to 3.2</li>
+<li>H is the hamming weight and is usually set to 64</li>
+</ul>
+<p>There are multiple lattice hardness estimators such as <a href="https://github.com/malb/lattice-estimator">Security Estimates for Lattice Problems</a> that allow you to input parameters and see how many bits of security the parameters provide. Ideally the parameters provide at least 128 bits of security.</p>
+<p><a href="https://projects.csail.mit.edu/HEWorkshop/HomomorphicEncryptionStandard2018.pdf">Homomorphic Encryption Standard</a> provides standard parameters for FHE schemes and can be used as a reference.</p>
 </section>
 <section id="encoding" class="level2">
 <h2 class="anchored" data-anchor-id="encoding">Encoding</h2>
@@ -398,7 +407,7 @@ i: 1, (2-1j) = i: 2, (2+1j)
 <span id="cb8-43"><a href="#cb8-43" aria-hidden="true" tabindex="-1"></a>encoded_z <span class="op">=</span> encode(z)</span>
 <span id="cb8-44"><a href="#cb8-44" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(encoded_z)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>159.0 + 90.0·x + 159.0·x² + 45.0·x³</code></pre>
+<pre><code>159.0 + 90.0·x + 160.0·x² + 44.0·x³</code></pre>
 </div>
 </div>
 <p>If compare with the paper’s example we can see that we got the same polynomial that they did and our scheme worked.</p>
@@ -437,7 +446,7 @@ i: 1, (2-1j) = i: 2, (2+1j)
 <span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(decode(encoded_z))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[2.98155946+3.97592837j 1.98719054-0.99282163j]</code></pre>
+<pre><code>[2.992608+3.98050482j 1.976142-1.01949518j]</code></pre>
 </div>
 </div>
 <p>We can see that the decoded value is very close to our orignal value.</p>
@@ -594,12 +603,26 @@ i: 1, (2-1j) = i: 2, (2+1j)
 <section id="multiplication-of-ciphertexts" class="level2">
 <h2 class="anchored" data-anchor-id="multiplication-of-ciphertexts">Multiplication of Ciphertexts</h2>
 <p>The most complex operation is multiplying two ciphertexts together. The noise of each ciphertext greatly increases the product’s noise and we have to have methods to deal with it so that it can be correctly decrypted.</p>
+<p>Multiplication is mathematically defined as Given <span class="math inline">\(c_1 = (b_1, a_1), c_2 = (b_2, a_2)\)</span> Multiply <span class="math inline">\((b_1b_2, a_1b_2 + a_2b_1, a_1a_2) (mod \space q_l) = (d_1, d_2, d_3)\)</span></p>
+<p>We notice that this increases our ciphertext space from 2 dimensions to 3 dimensions. This is a similar affect of multiplying two degree 1 polynomials and getting a degree polynomial eg. <span class="math inline">\((x+1)(x+3) = (x^2 + 4x + 3)\)</span></p>
+<p>To decrypt we need to have a cipher text of two dimensions. To convert the new ciphertext into 2 dimensions we introduce an operation called <strong>Relinearization</strong>.</p>
+<p>If you remember from the key generation algorithm we created an evaluation key that involved masking the squared secret key.</p>
+<p>Because of this evaluation key we can define our relinearization algorithm as: <span class="math inline">\((d_0, d_1) = \lfloor P^{-1} * d_2 * evk \rceil (mod \space q_l)\)</span></p>
+<p>There is still one more step needed to implement the multiplication algorithm.</p>
+<p>The <strong>Rescaling</strong> procedure is similar to the Modulus Switching technique used in other algorithms like BGV and has the purpose of eliminating some of the LSBs. It also keeps the scaling of the ciphertext consistent because when two ciphertexts with a scale factor of <span class="math inline">\(\Delta\)</span> multipy each other we get a scale factor of <span class="math inline">\(\Delta^2\)</span>.</p>
+<p>Rescaling is defined as <span class="math inline">\(\lfloor \frac{q_{l'}}{q_l}c \rceil\)</span></p>
+<p>So for multiplication we:</p>
+<ol type="1">
+<li>Multiply two ciphertexts to get a degree 3 ciphertext</li>
+<li>Relinearize the result back to 2 dimensions</li>
+<li>Rescaled the ciphertext so that the scale factor is correct</li>
+</ol>
+<p>An implementation is ommited because it multiplication in this scheme is unlikely to work unless you are a using a language that supports arbitrarily sized numbers.</p>
+<p>There is a paper that will be described below that shows how we can use this scheme with 64 bit numbers.</p>
 </section>
 <section id="next-steps" class="level2">
 <h2 class="anchored" data-anchor-id="next-steps">Next Steps</h2>
-</section>
-<section id="references" class="level2">
-<h2 class="anchored" data-anchor-id="references">References</h2>
+<p>If you are implementing the scheme from the paper, you will likely run into issues. There are many optimizations that one can do to improve it. One easy one is to replace parts of the encoding with the Fast Fourier Transform (FFT) instead of the Vandermonde matrix to improve the time complexity. The more important optimization is related to the modulus P*Q. You need a very large amount of bits to represent these large numbers. A fix for this is to use the Chinese Remaineder Theorem (CRT) to represent the large numbers as smaller primes. The paper that implements this is called <a href="https://eprint.iacr.org/2018/931.pdf">A Full RNS Variant of Approximate Homomorphic Encryption</a> and is recommended if you plan on implementing this scheme.</p>
 
 
 </section>
